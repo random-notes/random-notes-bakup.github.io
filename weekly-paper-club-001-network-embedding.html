@@ -8,7 +8,7 @@
 		<!-- Metadata -->
 	<meta name="description" content="">
 	<meta property="og:description" content="">
-	<meta property="og:title" content="StarSpace, embedding anything!" />
+	<meta property="og:title" content="StarSpace, embed anything!" />
 	<meta property="og:type" content="article" />
 	<meta property="og:url" content="http://blog.bshi.engineer/weekly-paper-club-001-network-embedding.html" />
 		<meta property="og:image" content="http://blog.bshi.engineer/images/headshot.jpg" />
@@ -74,7 +74,7 @@
 	</div>
 </div>		<div class="content container">
 <div class="post">
-	<h1 class="post-title">StarSpace, embedding anything!</h1>
+	<h1 class="post-title">StarSpace, embed anything!</h1>
 	<span class="post-date">Thu 21 September 2017</span>
 	<p>This is a new paper submitted to AAAI'18 by Facebook AI Research (FAIR) and the full article can be found on <a href="https://arxiv.org/abs/1709.03856">Arxiv</a>, the code is available at <a href="https://github.com/facebookresearch/Starspace">GitHub</a>. One of the author <a href="https://research.fb.com/people/bordes-antoine/">Antoine Bordes</a> is also the author of TransE, a well-known Knowledge Graph Completion model.</p>
 <p>In general, StarSpace is capable of learning embeddings from a set of finite features. If we have a finite feature dictionary <span class="math">\(\mathcal{D}\)</span> and has a feature matrix <span class="math">\(F \in \mathbb{R}^{\mathcal{D}\times d}\)</span>, in which <span class="math">\(F_i\)</span> is the <span class="math">\(d\)</span>-dimensional embedding of <span class="math">\(i^{\mathsf{th}}\)</span> feature. Then for an entity <span class="math">\(a\)</span> with k features <span class="math">\(\mathbf{a}=\{i_1,\cdots,i_k\}\)</span>, the embedding of entity <span class="math">\(a\)</span> is defined as unweighted sum of all these feature embeddings <span class="math">\(\sum_{i\in\mathbf{a}}F_i\)</span>.</p>
