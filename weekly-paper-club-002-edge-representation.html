@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+	<head>
+		<link href="http://gmpg.org/xfn/11" rel="profile">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+		<!-- Metadata -->
+	<meta name="description" content="">
+	<meta property="og:description" content="">
+	<meta property="og:title" content="Learning Edge Representations via Low-Rank Asymmetric Projections" />
+	<meta property="og:type" content="article" />
+	<meta property="og:url" content="http://blog.bshi.engineer/weekly-paper-club-002-edge-representation.html" />
+		<meta property="og:image" content="http://blog.bshi.engineer/images/headshot.jpg" />
+
+		<!-- Enable responsiveness on mobile devices-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+		<title>RAndom NoTes</title>
+
+		<!-- CSS -->
+		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
+		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
+
+		<link rel="stylesheet" href="http://blog.bshi.engineer/theme/css/poole.css" />
+		<link rel="stylesheet" href="http://blog.bshi.engineer/theme/css/hyde.css" />
+		<link rel="stylesheet" href="http://blog.bshi.engineer/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+		<!-- RSS -->
+		<link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+	<script type="text/javascript">
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+ 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+ 			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+ 			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+			ga('create', 'UA-106957224-1', 'auto');
+			ga('send', 'pageview');
+	</script>
+	</head>
+
+	<body class="theme-base-0d">
+<div class="sidebar">
+	<div class="container sidebar-sticky">
+		<div class="sidebar-about">
+
+			<h1>
+				<a href="/">
+					<img class="profile-picture" src="http://blog.bshi.engineer/images/headshot.jpg">
+					RAndom NoTes
+				</a>
+			</h1>
+			<p class="lead"></p>
+			<p class="lead"> </p>
+			<p></p>
+		</div>
+		<nav class="sidebar-nav">
+					<a class="sidebar-nav-item" href="mailto:baoxu.shi+rant@gmail.com">
+						<i class="fa fa-envelope"></i>
+					</a>
+					<a class="sidebar-nav-item" href="github.com/bxshi">
+						<i class="fa fa-github"></i>
+					</a>
+					<a class="sidebar-nav-item" href="www.linkedin.com/in/baoxushi/">
+						<i class="fa fa-linkedin"></i>
+					</a>
+					<a class="sidebar-nav-item" href="scholar.google.com/citations?user=BINSaTEAAAAJ&hl=en&authuser=1">
+						<i class="fa fa-certificate"></i>
+					</a>
+			<a class="sidebar-nav-item" href="">
+				<i class="fa fa-feed"></i>
+			</a>
+		</nav>
+	</div>
+</div>		<div class="content container">
+<div class="post">
+	<h1 class="post-title">Learning Edge Representations via Low-Rank Asymmetric Projections</h1>
+	<span class="post-date">Sun 24 September 2017</span>
+	<p>This paper is published at CIKM'17 and can be found at <a href="https://arxiv.org/pdf/1705.05615.pdf">Arxiv</a> and the code is available at <a href="http://sami.haija.org/graph/deep_embedding.html">here</a> however as of Sept 24th it is showing <code>Coming Soon!</code>. The corresponding author of this work is the author of <a href="https://arxiv.org/abs/1403.6652">DeepWalk</a>.</p>
+<p>Most network representation models learn representations <span class="math">\(Y_u\)</span> for each node <span class="math">\(u\)</span> in the graph and measure the closeness/edge betwee two nodes <span class="math">\(u\)</span> and <span class="math">\(v\)</span> by some distance measurement <span class="math">\(\mathsf{dist}(Y_u, Y_v)\)</span>. In this paper they call this method as <strong>node-centric</strong> and has two drawbacks:</p>
+<ol>
+<li>Such method implicitly assumes the connections are undirected, which means <span class="math">\(u\rightarrow v\)</span> and <span class="math">\(v\rightarrow u\)</span> are equivalent because they are sharing the same distance function,</li>
+<li>The authors claim that in some cases, the representation matrix <span class="math">\(|V|\times d\)</span> would be larger than the sparse adjacent matrix which has <span class="math">\(|E|\)</span> elements.</li>
+</ol>
+<p>In this work the authors propose a method to learn the node embeddings as follow:</p>
+<p>For each node <span class="math">\(u\)</span> in the graph, they learn an embedding <span class="math">\(Y_u \in \mathbb{R}^D\)</span>. Then they pass it through a shared deep neural network denoted by <span class="math">\(f:\mathbb{R}^D\rightarrow \mathbb{R}^d\)</span> to reduce the dimension from <span class="math">\(D\)</span> to <span class="math">\(d\)</span>. They also create an edge likelihood function <span class="math">\(g(u,v):f(Y_u)^T\times M \times f(Y_v)\)</span> to represent the edges. The matrix <span class="math">\(M\)</span> is a low-rank matrix which is defined as <span class="math">\(M = L \times R\)</span>, <span class="math">\(L = \mathbb{R}^{d\times b}\)</span>, <span class="math">\(R = \mathbb{R}^{b\times d}\)</span>. The edge representation is a combination of two vectors, the source embedding <span class="math">\(Rf(Y_v)\)</span> and the destination embedding <span class="math">\(L^Tf(Y_u)\)</span>.</p>
+<p><img alt="Model Illustration" src="images/paper_club_002_edge_rep.png"></p>
+<p><em>Although one could use the trained <span class="math">\(d\)</span>-dimensional embeddings for inference, this model still needs to learn two <span class="math">\(|V|\times D\)</span> embedding matrices during training like other models with an extra DNN.</em></p>
+<p>The DNN in this work is a two layer fully-connected layers with batch normalization and uses relu as the activation function.</p>
+<p>Like word2vec, in this work the model also learns two representations <span class="math">\(Y_u^{\textsf{source}}\)</span> and <span class="math">\(Y_u^{\textsf{dest}}\)</span> for a single node <span class="math">\(u\)</span>. Then the edge likelihood of <span class="math">\((u,v)\)</span> and <span class="math">\((v,u)\)</span> would be <span class="math">\(\textsf{dist}(Y_u^{\textsf{source}},Y_v^{\textsf{dest}})\)</span> and <span class="math">\(\textsf{dist}(Y_v^{\textsf{source}},Y_u^{\textsf{dest}})\)</span> respectively.</p>
+<p>The difference between this work and their previous DeepWalk are threefold:</p>
+<h3>The Graph Likelihood Function</h3>
+<p>Instead of minimizing the usual loss function used in other random walk based network representation models which is usually defined as</p>
+<div class="math">$$\underset{\theta}{\mathrm{argmin}}\prod_{v\in V}\prod_{c \in N(v)} p(c|v;\theta)$$</div>
+<p>in which <span class="math">\(N(v)\)</span> is the neighborhood node set of node <span class="math">\(u\)</span> defined by a random walk path and a contex window size (you could find the details in DeepWalk).</p>
+<p>This work defines a new loss function based on the idea of logistic regression</p>
+<div class="math">$$\Pr(G) \propto \prod_{u\in V, v\in V} \sigma(g(u,v))^{\mathcal{D}_{u,v}}(1-\sigma(g(u,v)))^{\mathbb{I}((u,v)\notin E_{train}}$$</div>
+<p>in which the first term <span class="math">\(\prod_{u\in V, v\in V} \sigma(g(u,v))^{\mathcal{D}_{u,v}}\)</span> is enabled when <span class="math">\(u\)</span> and <span class="math">\(v\)</span> co-occur in the same context window by the unnormalized requency <span class="math">\(\mathcal{D}_{u,v}\)</span>, and <span class="math">\((1-\sigma(g(u,v)))^{\mathbb{I}((u,v)\notin E_{train}}\)</span> is enabled when <span class="math">\(u\rightarrow v\)</span> is a false edge. Note that the authors did not specify if <span class="math">\((u,v)\notin E_{train}\)</span> only considers direct connection or multi-hop connection.</p>
+<p>Either way, their final loss function is more straightforward </p>
+<div class="math">$$\mathcal{L} = \mathbb{E}_{(u,v) \sim \mathcal{D}/Z}\left[\log\sigma(g(u,v)) + \sum_{v^-\in Sample(K, u\hat{-})}\log(1-\sigma(g(u,v^-)))\right]$$</div>
+<p>By explicitly selecting true node pairs and false node pairs, one no longer needs to worry about the aforementioned problem in the <span class="math">\(\Pr(G)\)</span> equation.</p>
+<h3>The Edge Likelihood Function</h3>
+<p>This is the <span class="math">\(g(\cdot)\)</span> we discussed previously.</p>
+<h3>The Context Definition</h3>
+<p>The context is defined differently for undirected graphs and directed graphs. For paths in undirected graphs, context of <span class="math">\(u_i\)</span> in <span class="math">\(u_1\rightarrow\cdots\rightarrow u_i\rightarrow\cdots\rightarrow u_k\)</span> are <span class="math">\(\{u_1,\cdots,u_{i-1},\cdots,u_{k}\}\)</span>; whereas in directed graphs, the context of <span class="math">\(u_i\)</span> becomes <span class="math">\(\{u_{i+1},\cdots,u_k\}\)</span>. But I'm not sure why this would improve the performance because the previous nodes should also play a role when defining the embedding.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+</div>
+		</div>
+	</body>
+</html>
