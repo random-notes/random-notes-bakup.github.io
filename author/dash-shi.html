@@ -1,106 +1,1791 @@
 <!DOCTYPE html>
-<html lang="en" prefix="og: http://ogp.me/ns#">
-	<head>
-		<link href="http://gmpg.org/xfn/11" rel="profile">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>RAndom NoTes | Articles by Dash Shi</title>
+    <link rel="shortcut icon" type="image/png" href="http://blog.bshi.engineer/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="http://blog.bshi.engineer/favicon.ico">
+    <link href="http://blog.bshi.engineer/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="RAndom NoTes Full Atom Feed" />
+    <link rel="stylesheet" href="http://blog.bshi.engineer/theme/css/screen.css" type="text/css" />
+    <link rel="stylesheet" href="http://blog.bshi.engineer/theme/css/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="http://blog.bshi.engineer/theme/css/print.css" type="text/css" media="print" />
+    <meta name="generator" content="Pelican" />
+    <meta name="description" content="" />
+    <meta name="author" content="Dash Shi" />
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
 
-		<!-- Metadata -->
-			<meta name="description" content="" />
-			<meta property="og:description" content="" />
-			<meta property="og:title" content="RAndom NoTes" />
-			<meta property="og:type" content="website" />
-			<meta property="og:url" content="http://blog.bshi.engineer" />
-		<meta property="og:image" content="http://blog.bshi.engineer/images/headshot.jpg" />
+                <li class="ephemeral selected"><a href="http://blog.bshi.engineer/author/dash-shi.html">Dash Shi</a></li>
+                <li><a href="http://blog.bshi.engineer/">Home</a></li>
+            </ul>
+        </nav>
+        <div class="header_box">
+            <h1><a href="http://blog.bshi.engineer/">RAndom NoTes</a></h1>
+        </div>
+    </header>
+    <div id="wrapper">
+        <div id="content">            <h4 class="date">Sep 24, 2017</h4>
 
-		<!-- Enable responsiveness on mobile devices-->
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+            <article class="post">
+                <h2 class="title">
+                    <a href="http://blog.bshi.engineer/weekly-paper-club-002-edge-representation.html" rel="bookmark" title="Permanent Link to &quot;Learning Edge Representations via Low-Rank Asymmetric Projections&quot;">Learning Edge Representations via Low-Rank Asymmetric Projections</a>
+                </h2>
 
-		<title>RAndom NoTes - Articles by Dash Shi</title>
+                
+                
 
-		<!-- CSS -->
-		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
-		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
+                <p>This paper is published at CIKM'17 and can be found at <a href="https://arxiv.org/pdf/1705.05615.pdf">Arxiv</a> and the code is available at <a href="http://sami.haija.org/graph/deep_embedding.html">here</a> however as of Sept 24th it is showing <code>Coming Soon!</code>. The corresponding author of this work is the author of <a href="https://arxiv.org/abs/1403.6652">DeepWalk</a>.</p>
+<p>Most network representation models learn representations <span class="math">\(Y_u\)</span> for each node <span class="math">\(u\)</span> in the graph and measure the closeness/edge betwee two nodes <span class="math">\(u\)</span> and <span class="math">\(v\)</span> by some distance measurement <span class="math">\(\mathsf{dist}(Y_u, Y_v)\)</span>. In this paper they call this method as <strong>node-centric</strong> and has two drawbacks:</p>
+<ol>
+<li>Such method implicitly assumes the connections are undirected, which means <span class="math">\(u\rightarrow v\)</span> and <span class="math">\(v\rightarrow u\)</span> are equivalent because they are sharing the same distance function,</li>
+<li>The authors claim that in some cases, the representation matrix <span class="math">\(|V|\times d\)</span> would be larger than the sparse adjacent matrix which has <span class="math">\(|E|\)</span> elements.</li>
+</ol>
+<p>In this work the authors propose a method to learn the node embeddings as follow:</p>
+<p>For each node <span class="math">\(u\)</span> in the graph, they learn an embedding <span class="math">\(Y_u \in \mathbb{R}^D\)</span>. Then they pass it through a shared deep neural network denoted by <span class="math">\(f:\mathbb{R}^D\rightarrow \mathbb{R}^d\)</span> to reduce the dimension from <span class="math">\(D\)</span> to <span class="math">\(d\)</span>. They also create an edge likelihood function <span class="math">\(g(u,v):f(Y_u)^T\times M \times f(Y_v)\)</span> to represent the edges. The matrix <span class="math">\(M\)</span> is a low-rank matrix which is defined as <span class="math">\(M = L \times R\)</span>, <span class="math">\(L = \mathbb{R}^{d\times b}\)</span>, <span class="math">\(R = \mathbb{R}^{b\times d}\)</span>. The edge representation is a combination of two vectors, the source embedding <span class="math">\(Rf(Y_v)\)</span> and the destination embedding <span class="math">\(L^Tf(Y_u)\)</span>.</p>
+<p><img alt="Model Illustration" src="images/paper_club_002_edge_rep.png"></p>
+<p><em>Although one could use the trained <span class="math">\(d\)</span>-dimensional embeddings for inference, this model still needs to learn two <span class="math">\(|V|\times D\)</span> embedding matrices during training like other models with an extra DNN.</em></p>
+<p>The DNN in this work is a two layer fully-connected layers with batch normalization and uses relu as the activation function.</p>
+<p>Like word2vec, in this work the model also learns two representations <span class="math">\(Y_u^{\textsf{source}}\)</span> and <span class="math">\(Y_u^{\textsf{dest}}\)</span> for a single node <span class="math">\(u\)</span>. Then the edge likelihood of <span class="math">\((u,v)\)</span> and <span class="math">\((v,u)\)</span> would be <span class="math">\(\textsf{dist}(Y_u^{\textsf{source}},Y_v^{\textsf{dest}})\)</span> and <span class="math">\(\textsf{dist}(Y_v^{\textsf{source}},Y_u^{\textsf{dest}})\)</span> respectively.</p>
+<p>The difference between this work and their previous DeepWalk are threefold:</p>
+<h3>The Graph Likelihood Function</h3>
+<p>Instead of minimizing the usual loss function used in other random walk based network representation models which is usually defined as</p>
+<div class="math">$$\underset{\theta}{\mathrm{argmin}}\prod_{v\in V}\prod_{c \in N(v)} p(c|v;\theta)$$</div>
+<p>in which <span class="math">\(N(v)\)</span> is the neighborhood node set of node <span class="math">\(u\)</span> defined by a random walk path and a contex window size (you could find the details in DeepWalk).</p>
+<p>This work defines a new loss function based on the idea of logistic regression</p>
+<div class="math">$$\Pr(G) \propto \prod_{u\in V, v\in V} \sigma(g(u,v))^{\mathcal{D}_{u,v}}(1-\sigma(g(u,v)))^{\mathbb{I}((u,v)\notin E_{train}}$$</div>
+<p>in which the first term <span class="math">\(\prod_{u\in V, v\in V} \sigma(g(u,v))^{\mathcal{D}_{u,v}}\)</span> is enabled when <span class="math">\(u\)</span> and <span class="math">\(v\)</span> co-occur in the same context window by the unnormalized requency <span class="math">\(\mathcal{D}_{u,v}\)</span>, and <span class="math">\((1-\sigma(g(u,v)))^{\mathbb{I}((u,v)\notin E_{train}}\)</span> is enabled when <span class="math">\(u\rightarrow v\)</span> is a false edge. Note that the authors did not specify if <span class="math">\((u,v)\notin E_{train}\)</span> only considers direct connection or multi-hop connection.</p>
+<p>Either way, their final loss function is more straightforward </p>
+<div class="math">$$\mathcal{L} = \mathbb{E}_{(u,v) \sim \mathcal{D}/Z}\left[\log\sigma(g(u,v)) + \sum_{v^-\in Sample(K, u\hat{-})}\log(1-\sigma(g(u,v^-)))\right]$$</div>
+<p>By explicitly selecting true node pairs and false node pairs, one no longer needs to worry about the aforementioned problem in the <span class="math">\(\Pr(G)\)</span> equation.</p>
+<h3>The Edge Likelihood Function</h3>
+<p>This is the <span class="math">\(g(\cdot)\)</span> we discussed previously.</p>
+<h3>The Context Definition</h3>
+<p>The context is defined differently for undirected graphs and directed graphs. For paths in undirected graphs, context of <span class="math">\(u_i\)</span> in <span class="math">\(u_1\rightarrow\cdots\rightarrow u_i\rightarrow\cdots\rightarrow u_k\)</span> are <span class="math">\(\{u_1,\cdots,u_{i-1},\cdots,u_{k}\}\)</span>; whereas in directed graphs, the context of <span class="math">\(u_i\)</span> becomes <span class="math">\(\{u_{i+1},\cdots,u_k\}\)</span>. But I'm not sure why this would improve the performance because the previous nodes should also play a role when defining the embedding.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
 
-		<link rel="stylesheet" href="http://blog.bshi.engineer/theme/css/poole.css" />
-		<link rel="stylesheet" href="http://blog.bshi.engineer/theme/css/hyde.css" />
-		<link rel="stylesheet" href="http://blog.bshi.engineer/theme/css/syntax.css" />
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
 
-		<!-- RSS -->
-		<link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
-	<script type="text/javascript">
-		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
- 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
- 			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
- 			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-			ga('create', 'UA-106957224-1', 'auto');
-			ga('send', 'pageview');
-	</script>
-	</head>
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+                <div class="clear"></div>
 
-	<body class="theme-base-0d">
-<div class="sidebar">
-	<div class="container sidebar-sticky">
-		<div class="sidebar-about">
+                <div class="info">
+                    <a href="http://blog.bshi.engineer/weekly-paper-club-002-edge-representation.html">posted at 00:00</a>
+                    &nbsp;&middot;&nbsp;<a href="http://blog.bshi.engineer/category/paper-club.html" rel="tag">Paper Club</a>
+                    &nbsp;&middot;
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/research.html" class="tags">research</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/deep-learning.html" class="tags">deep learning</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/paper-club.html" class="tags">paper club</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/representation-learning.html" class="tags">representation learning</a>
+                </div>
+		<a href="http://blog.bshi.engineer/weekly-paper-club-002-edge-representation.html#disqus_thread">Click to read and post comments</a>
+            </article>            <h4 class="date">Sep 21, 2017</h4>
 
-			<h1>
-				<a href="/">
-					<img class="profile-picture" src="http://blog.bshi.engineer/images/headshot.jpg">
-					RAndom NoTes
-				</a>
-			</h1>
-			<p class="lead"></p>
-			<p class="lead"> </p>
-			<p></p>
-		</div>
-		<nav class="sidebar-nav">
-					<a class="sidebar-nav-item" href="mailto:baoxu.shi+rant@gmail.com">
-						<i class="fa fa-envelope"></i>
-					</a>
-					<a class="sidebar-nav-item" href="github.com/bxshi">
-						<i class="fa fa-github"></i>
-					</a>
-					<a class="sidebar-nav-item" href="www.linkedin.com/in/baoxushi/">
-						<i class="fa fa-linkedin"></i>
-					</a>
-					<a class="sidebar-nav-item" href="scholar.google.com/citations?user=BINSaTEAAAAJ&hl=en&authuser=1">
-						<i class="fa fa-certificate"></i>
-					</a>
-			<a class="sidebar-nav-item" href="">
-				<i class="fa fa-feed"></i>
-			</a>
-		</nav>
-	</div>
-</div>		<div class="content container">
-	<div class="posts">
-			<div class="post">
-				<h1 class="post-title" href="http://blog.bshi.engineer/weekly-paper-club-002-edge-representation.html#weekly-paper-club-002-edge-representation">
-					<a href="http://blog.bshi.engineer/weekly-paper-club-002-edge-representation.html#weekly-paper-club-002-edge-representation">Learning Edge Representations via Low-Rank Asymmetric Projections</a>
-				</h1>
-				<span class="post-date">Sun 24 September 2017</span>
-				<p>
-					<p>This paper uses random walk with DNN to generate an asymmetric edge score for two given nodes and then train the model using a loss similar to logistic regression with sampled negative labels.</p>
-				</p>
-				<a class="read-more" href="weekly-paper-club-002-edge-representation.html">Continue reading »</a>
-			</div>
-			<div class="post">
-				<h1 class="post-title" href="http://blog.bshi.engineer/weekly-paper-club-001-network-embedding.html#weekly-paper-club-001-network-embedding">
-					<a href="http://blog.bshi.engineer/weekly-paper-club-001-network-embedding.html#weekly-paper-club-001-network-embedding">StarSpace, embed anything!</a>
-				</h1>
-				<span class="post-date">Thu 21 September 2017</span>
-				<p>
-					<p>StarSpace is a general representation learning model that learn entity embeddings using feature embeddings.</p>
-				</p>
-				<a class="read-more" href="weekly-paper-club-001-network-embedding.html">Continue reading »</a>
-			</div>
-	</div>
-	<div class="pagination">
+            <article class="post">
+                <h2 class="title">
+                    <a href="http://blog.bshi.engineer/weekly-paper-club-001-network-embedding.html" rel="bookmark" title="Permanent Link to &quot;StarSpace, embed anything!&quot;">StarSpace, embed anything!</a>
+                </h2>
 
-		<span class="pagination-item older">Newer</span>
+                
+                
 
-		<span class="pagination-item newer">Older</span>
-	</div>
-		</div>
-	</body>
+                <p>This is a new paper submitted to AAAI'18 by Facebook AI Research (FAIR) and the full article can be found on <a href="https://arxiv.org/abs/1709.03856">Arxiv</a>, the code is available at <a href="https://github.com/facebookresearch/Starspace">GitHub</a>. One of the author <a href="https://research.fb.com/people/bordes-antoine/">Antoine Bordes</a> is also the author of TransE, a well-known Knowledge Graph Completion model.</p>
+<p>In general, StarSpace is capable of learning embeddings from a set of finite features. If we have a finite feature dictionary <span class="math">\(\mathcal{D}\)</span> and has a feature matrix <span class="math">\(F \in \mathbb{R}^{\mathcal{D}\times d}\)</span>, in which <span class="math">\(F_i\)</span> is the <span class="math">\(d\)</span>-dimensional embedding of <span class="math">\(i^{\mathsf{th}}\)</span> feature. Then for an entity <span class="math">\(a\)</span> with k features <span class="math">\(\mathbf{a}=\{i_1,\cdots,i_k\}\)</span>, the embedding of entity <span class="math">\(a\)</span> is defined as unweighted sum of all these feature embeddings <span class="math">\(\sum_{i\in\mathbf{a}}F_i\)</span>.</p>
+<p>When training the model, StarSpace uses </p>
+<div class="math">$$\sum_{(a,b)\in E^+, b^- \in E^-} L^{\textsf{batch}}(sim(a,b),sim(a,b^-_1),\ldots,sim(a,b^-_k))$$</div>
+<p>in which</p>
+<ul>
+<li><span class="math">\(E^+\)</span> is the positive entity pair set.</li>
+<li><span class="math">\(E^-\)</span> is the negative pair set that <span class="math">\(\{(a,b) | (a,\cdot) \in E^+, (a,b) \notin E^+ \}\)</span>, which means <span class="math">\(a\)</span> and <span class="math">\(b\)</span> has the correct left-hand and right-hand entity type but <span class="math">\(b\)</span> is not the correct right-hand element. For example if we are predicting LocatedIn, then <span class="math">\(a\)</span> will be a building and <span class="math">\(b\)</span> will be a location.</li>
+<li>The sim function, according to the authors, is best to be inner product for smaller number of features (<span class="math">\(|\mathbf{a}|\)</span>) and cosine for larger number of features.</li>
+<li><span class="math">\(\mathcal{L}\)</span> is better to be ranking loss instead of softmax loss. (What is the ranking loss in this case? It should not be the standard pairwise ranking loss I guess)</li>
+</ul>
+<p>It is relatively easy to do the multi-class classification because the labels can be viewed as <span class="math">\(b\)</span>, same thing applies to word/sentence/document similarity in which each pair of similar word/sentence/document can be represented by <span class="math">\(a\)</span> and <span class="math">\(b\)</span>. As for Knowledge Graph Completion, <span class="math">\(a\)</span> could be h &amp; r and <span class="math">\(b\)</span> be t or <span class="math">\(a\)</span> be h and <span class="math">\(b\)</span> be r &amp; t.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+                <div class="clear"></div>
+
+                <div class="info">
+                    <a href="http://blog.bshi.engineer/weekly-paper-club-001-network-embedding.html">posted at 00:00</a>
+                    &nbsp;&middot;&nbsp;<a href="http://blog.bshi.engineer/category/paper-club.html" rel="tag">Paper Club</a>
+                    &nbsp;&middot;
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/research.html" class="tags">research</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/deep-learning.html" class="tags">deep learning</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/paper-club.html" class="tags">paper club</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/representation-learning.html" class="tags">representation learning</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/network-representation.html" class="tags">network representation</a>
+                </div>
+		<a href="http://blog.bshi.engineer/weekly-paper-club-001-network-embedding.html#disqus_thread">Click to read and post comments</a>
+            </article>            <h4 class="date">Aug 20, 2017</h4>
+
+            <article class="post">
+                <h2 class="title">
+                    <a href="http://blog.bshi.engineer/AoFTS-chap-01-notes.html" rel="bookmark" title="Permanent Link to &quot;AoFTS Chapter01: Financial Time Series and Their Characteristics&quot;">AoFTS Chapter01: Financial Time Series and Their Characteristics</a>
+                </h2>
+
+                
+                
+
+                <style type="text/css">/*!
+*
+* IPython notebook
+*
+*/
+/* CSS font colors for translated ANSI colors. */
+.ansibold {
+  font-weight: bold;
+}
+/* use dark versions for foreground, to improve visibility */
+.ansiblack {
+  color: black;
+}
+.ansired {
+  color: darkred;
+}
+.ansigreen {
+  color: darkgreen;
+}
+.ansiyellow {
+  color: #c4a000;
+}
+.ansiblue {
+  color: darkblue;
+}
+.ansipurple {
+  color: darkviolet;
+}
+.ansicyan {
+  color: steelblue;
+}
+.ansigray {
+  color: gray;
+}
+/* and light for background, for the same reason */
+.ansibgblack {
+  background-color: black;
+}
+.ansibgred {
+  background-color: red;
+}
+.ansibggreen {
+  background-color: green;
+}
+.ansibgyellow {
+  background-color: yellow;
+}
+.ansibgblue {
+  background-color: blue;
+}
+.ansibgpurple {
+  background-color: magenta;
+}
+.ansibgcyan {
+  background-color: cyan;
+}
+.ansibggray {
+  background-color: gray;
+}
+div.cell {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  border-radius: 2px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+  width: 100%;
+  padding: 5px;
+  /* This acts as a spacer between cells, that is outside the border */
+  margin: 0px;
+  outline: none;
+  border-left-width: 1px;
+  padding-left: 5px;
+  background: linear-gradient(to right, transparent -40px, transparent 1px, transparent 1px, transparent 100%);
+}
+div.cell.jupyter-soft-selected {
+  border-left-color: #90CAF9;
+  border-left-color: #E3F2FD;
+  border-left-width: 1px;
+  padding-left: 5px;
+  border-right-color: #E3F2FD;
+  border-right-width: 1px;
+  background: #E3F2FD;
+}
+@media print {
+  div.cell.jupyter-soft-selected {
+    border-color: transparent;
+  }
+}
+div.cell.selected {
+  border-color: #ababab;
+  border-left-width: 0px;
+  padding-left: 6px;
+  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 5px, transparent 5px, transparent 100%);
+}
+@media print {
+  div.cell.selected {
+    border-color: transparent;
+  }
+}
+div.cell.selected.jupyter-soft-selected {
+  border-left-width: 0;
+  padding-left: 6px;
+  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 7px, #E3F2FD 7px, #E3F2FD 100%);
+}
+.edit_mode div.cell.selected {
+  border-color: #66BB6A;
+  border-left-width: 0px;
+  padding-left: 6px;
+  background: linear-gradient(to right, #66BB6A -40px, #66BB6A 5px, transparent 5px, transparent 100%);
+}
+@media print {
+  .edit_mode div.cell.selected {
+    border-color: transparent;
+  }
+}
+.prompt {
+  /* This needs to be wide enough for 3 digit prompt numbers: In[100]: */
+  min-width: 14ex;
+  /* This padding is tuned to match the padding on the CodeMirror editor. */
+  padding: 0.4em;
+  margin: 0px;
+  font-family: monospace;
+  text-align: right;
+  /* This has to match that of the the CodeMirror class line-height below */
+  line-height: 1.21429em;
+  /* Don't highlight prompt number selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Use default cursor */
+  cursor: default;
+}
+@media (max-width: 540px) {
+  .prompt {
+    text-align: left;
+  }
+}
+div.inner_cell {
+  min-width: 0;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  /* Old browsers */
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  /* Modern browsers */
+  flex: 1;
+}
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_area {
+  border: 1px solid #cfcfcf;
+  border-radius: 2px;
+  background: #f7f7f7;
+  line-height: 1.21429em;
+}
+/* This is needed so that empty prompt areas can collapse to zero height when there
+   is no content in the output_subarea and the prompt. The main purpose of this is
+   to make sure that empty JavaScript output_subareas have no height. */
+div.prompt:empty {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+div.unrecognized_cell {
+  padding: 5px 5px 5px 0px;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+div.unrecognized_cell .inner_cell {
+  border-radius: 2px;
+  padding: 5px;
+  font-weight: bold;
+  color: red;
+  border: 1px solid #cfcfcf;
+  background: #eaeaea;
+}
+div.unrecognized_cell .inner_cell a {
+  color: inherit;
+  text-decoration: none;
+}
+div.unrecognized_cell .inner_cell a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+@media (max-width: 540px) {
+  div.unrecognized_cell > div.prompt {
+    display: none;
+  }
+}
+div.code_cell {
+  /* avoid page breaking on code cells when printing */
+}
+@media print {
+  div.code_cell {
+    page-break-inside: avoid;
+  }
+}
+/* any special styling for code cells that are currently running goes here */
+div.input {
+  page-break-inside: avoid;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.input {
+    /* Old browsers */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    -moz-box-align: stretch;
+    display: box;
+    box-orient: vertical;
+    box-align: stretch;
+    /* Modern browsers */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_prompt {
+  color: #303F9F;
+  border-top: 1px solid transparent;
+}
+div.input_area > div.highlight {
+  margin: 0.4em;
+  border: none;
+  padding: 0px;
+  background-color: transparent;
+}
+div.input_area > div.highlight > pre {
+  margin: 0px;
+  border: none;
+  padding: 0px;
+  background-color: transparent;
+}
+/* The following gets added to the <head> if it is detected that the user has a
+ * monospace font with inconsistent normal/bold/italic height.  See
+ * notebookmain.js.  Such fonts will have keywords vertically offset with
+ * respect to the rest of the text.  The user should select a better font.
+ * See: https://github.com/ipython/ipython/issues/1503
+ *
+ * .CodeMirror span {
+ *      vertical-align: bottom;
+ * }
+ */
+.CodeMirror {
+  line-height: 1.21429em;
+  /* Changed from 1em to our global default */
+  font-size: 14px;
+  height: auto;
+  /* Changed to auto to autogrow */
+  background: none;
+  /* Changed from white to allow our bg to show through */
+}
+.CodeMirror-scroll {
+  /*  The CodeMirror docs are a bit fuzzy on if overflow-y should be hidden or visible.*/
+  /*  We have found that if it is visible, vertical scrollbars appear with font size changes.*/
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+.CodeMirror-lines {
+  /* In CM2, this used to be 0.4em, but in CM3 it went to 4px. We need the em value because */
+  /* we have set a different line-height and want this to scale with that. */
+  padding: 0.4em;
+}
+.CodeMirror-linenumber {
+  padding: 0 8px 0 4px;
+}
+.CodeMirror-gutters {
+  border-bottom-left-radius: 2px;
+  border-top-left-radius: 2px;
+}
+.CodeMirror pre {
+  /* In CM3 this went to 4px from 0 in CM2. We need the 0 value because of how we size */
+  /* .CodeMirror-lines */
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+/*
+
+Original style from softwaremaniacs.org (c) Ivan Sagalaev <Maniac@SoftwareManiacs.Org>
+Adapted from GitHub theme
+
+*/
+.highlight-base {
+  color: #000;
+}
+.highlight-variable {
+  color: #000;
+}
+.highlight-variable-2 {
+  color: #1a1a1a;
+}
+.highlight-variable-3 {
+  color: #333333;
+}
+.highlight-string {
+  color: #BA2121;
+}
+.highlight-comment {
+  color: #408080;
+  font-style: italic;
+}
+.highlight-number {
+  color: #080;
+}
+.highlight-atom {
+  color: #88F;
+}
+.highlight-keyword {
+  color: #008000;
+  font-weight: bold;
+}
+.highlight-builtin {
+  color: #008000;
+}
+.highlight-error {
+  color: #f00;
+}
+.highlight-operator {
+  color: #AA22FF;
+  font-weight: bold;
+}
+.highlight-meta {
+  color: #AA22FF;
+}
+/* previously not defined, copying from default codemirror */
+.highlight-def {
+  color: #00f;
+}
+.highlight-string-2 {
+  color: #f50;
+}
+.highlight-qualifier {
+  color: #555;
+}
+.highlight-bracket {
+  color: #997;
+}
+.highlight-tag {
+  color: #170;
+}
+.highlight-attribute {
+  color: #00c;
+}
+.highlight-header {
+  color: blue;
+}
+.highlight-quote {
+  color: #090;
+}
+.highlight-link {
+  color: #00c;
+}
+/* apply the same style to codemirror */
+.cm-s-ipython span.cm-keyword {
+  color: #008000;
+  font-weight: bold;
+}
+.cm-s-ipython span.cm-atom {
+  color: #88F;
+}
+.cm-s-ipython span.cm-number {
+  color: #080;
+}
+.cm-s-ipython span.cm-def {
+  color: #00f;
+}
+.cm-s-ipython span.cm-variable {
+  color: #000;
+}
+.cm-s-ipython span.cm-operator {
+  color: #AA22FF;
+  font-weight: bold;
+}
+.cm-s-ipython span.cm-variable-2 {
+  color: #1a1a1a;
+}
+.cm-s-ipython span.cm-variable-3 {
+  color: #333333;
+}
+.cm-s-ipython span.cm-comment {
+  color: #408080;
+  font-style: italic;
+}
+.cm-s-ipython span.cm-string {
+  color: #BA2121;
+}
+.cm-s-ipython span.cm-string-2 {
+  color: #f50;
+}
+.cm-s-ipython span.cm-meta {
+  color: #AA22FF;
+}
+.cm-s-ipython span.cm-qualifier {
+  color: #555;
+}
+.cm-s-ipython span.cm-builtin {
+  color: #008000;
+}
+.cm-s-ipython span.cm-bracket {
+  color: #997;
+}
+.cm-s-ipython span.cm-tag {
+  color: #170;
+}
+.cm-s-ipython span.cm-attribute {
+  color: #00c;
+}
+.cm-s-ipython span.cm-header {
+  color: blue;
+}
+.cm-s-ipython span.cm-quote {
+  color: #090;
+}
+.cm-s-ipython span.cm-link {
+  color: #00c;
+}
+.cm-s-ipython span.cm-error {
+  color: #f00;
+}
+.cm-s-ipython span.cm-tab {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=);
+  background-position: right;
+  background-repeat: no-repeat;
+}
+div.output_wrapper {
+  /* this position must be relative to enable descendents to be absolute within it */
+  position: relative;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  z-index: 1;
+}
+/* class for the output area when it should be height-limited */
+div.output_scroll {
+  /* ideally, this would be max-height, but FF barfs all over that */
+  height: 24em;
+  /* FF needs this *and the wrapper* to specify full width, or it will shrinkwrap */
+  width: 100%;
+  overflow: auto;
+  border-radius: 2px;
+  -webkit-box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+  display: block;
+}
+/* output div while it is collapsed */
+div.output_collapsed {
+  margin: 0px;
+  padding: 0px;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+div.out_prompt_overlay {
+  height: 100%;
+  padding: 0px 0.4em;
+  position: absolute;
+  border-radius: 2px;
+}
+div.out_prompt_overlay:hover {
+  /* use inner shadow to get border that is computed the same on WebKit/FF */
+  -webkit-box-shadow: inset 0 0 1px #000;
+  box-shadow: inset 0 0 1px #000;
+  background: rgba(240, 240, 240, 0.5);
+}
+div.output_prompt {
+  color: #D84315;
+}
+/* This class is the outer container of all output sections. */
+div.output_area {
+  padding: 0px;
+  page-break-inside: avoid;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+div.output_area .MathJax_Display {
+  text-align: left !important;
+}
+div.output_area 
+div.output_area 
+div.output_area img,
+div.output_area svg {
+  max-width: 100%;
+  height: auto;
+}
+div.output_area img.unconfined,
+div.output_area svg.unconfined {
+  max-width: none;
+}
+/* This is needed to protect the pre formating from global settings such
+   as that of bootstrap */
+.output {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.output_area {
+    /* Old browsers */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    -moz-box-align: stretch;
+    display: box;
+    box-orient: vertical;
+    box-align: stretch;
+    /* Modern browsers */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+div.output_area pre {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+  color: black;
+  background-color: transparent;
+  border-radius: 0;
+}
+/* This class is for the output subarea inside the output_area and after
+   the prompt div. */
+div.output_subarea {
+  overflow-x: auto;
+  padding: 0.4em;
+  /* Old browsers */
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  /* Modern browsers */
+  flex: 1;
+  max-width: calc(100% - 14ex);
+}
+div.output_scroll div.output_subarea {
+  overflow-x: visible;
+}
+/* The rest of the output_* classes are for special styling of the different
+   output types */
+/* all text output has this class: */
+div.output_text {
+  text-align: left;
+  color: #000;
+  /* This has to match that of the the CodeMirror class line-height below */
+  line-height: 1.21429em;
+}
+/* stdout/stderr are 'text' as well as 'stream', but execute_result/error are *not* streams */
+div.output_stderr {
+  background: #fdd;
+  /* very light red background for stderr */
+}
+div.output_latex {
+  text-align: left;
+}
+/* Empty output_javascript divs should have no height */
+div.output_javascript:empty {
+  padding: 0;
+}
+.js-error {
+  color: darkred;
+}
+/* raw_input styles */
+div.raw_input_container {
+  line-height: 1.21429em;
+  padding-top: 5px;
+}
+pre.raw_input_prompt {
+  /* nothing needed here. */
+}
+input.raw_input {
+  font-family: monospace;
+  font-size: inherit;
+  color: inherit;
+  width: auto;
+  /* make sure input baseline aligns with prompt */
+  vertical-align: baseline;
+  /* padding + margin = 0.5em between prompt and cursor */
+  padding: 0em 0.25em;
+  margin: 0em 0.25em;
+}
+input.raw_input:focus {
+  box-shadow: none;
+}
+p.p-space {
+  margin-bottom: 10px;
+}
+div.output_unrecognized {
+  padding: 5px;
+  font-weight: bold;
+  color: red;
+}
+div.output_unrecognized a {
+  color: inherit;
+  text-decoration: none;
+}
+div.output_unrecognized a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+.rendered_html {
+  color: #000;
+  /* any extras will just be numbers: */
+}
+
+
+
+.rendered_html :link {
+  text-decoration: underline;
+}
+.rendered_html :visited {
+  text-decoration: underline;
+}
+
+
+
+
+
+
+.rendered_html h1:first-child {
+  margin-top: 0.538em;
+}
+.rendered_html h2:first-child {
+  margin-top: 0.636em;
+}
+.rendered_html h3:first-child {
+  margin-top: 0.777em;
+}
+.rendered_html h4:first-child {
+  margin-top: 1em;
+}
+.rendered_html h5:first-child {
+  margin-top: 1em;
+}
+.rendered_html h6:first-child {
+  margin-top: 1em;
+}
+
+
+
+
+
+
+
+
+.rendered_html * + ul {
+  margin-top: 1em;
+}
+.rendered_html * + ol {
+  margin-top: 1em;
+}
+
+
+.rendered_html pre,
+
+
+
+.rendered_html tr,
+.rendered_html th,
+
+.rendered_html td,
+
+
+.rendered_html * + table {
+  margin-top: 1em;
+}
+
+.rendered_html * + p {
+  margin-top: 1em;
+}
+
+.rendered_html * + img {
+  margin-top: 1em;
+}
+.rendered_html img,
+
+.rendered_html img.unconfined,
+
+div.text_cell {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.text_cell > div.prompt {
+    display: none;
+  }
+}
+div.text_cell_render {
+  /*font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;*/
+  outline: none;
+  resize: none;
+  width: inherit;
+  border-style: none;
+  padding: 0.5em 0.5em 0.5em 0.4em;
+  color: #000;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+a.anchor-link:link {
+  text-decoration: none;
+  padding: 0px 20px;
+  visibility: hidden;
+}
+h1:hover .anchor-link,
+h2:hover .anchor-link,
+h3:hover .anchor-link,
+h4:hover .anchor-link,
+h5:hover .anchor-link,
+h6:hover .anchor-link {
+  visibility: visible;
+}
+.text_cell.rendered .input_area {
+  display: none;
+}
+.text_cell.rendered 
+.text_cell.unrendered .text_cell_render {
+  display: none;
+}
+.cm-header-1,
+.cm-header-2,
+.cm-header-3,
+.cm-header-4,
+.cm-header-5,
+.cm-header-6 {
+  font-weight: bold;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.cm-header-1 {
+  font-size: 185.7%;
+}
+.cm-header-2 {
+  font-size: 157.1%;
+}
+.cm-header-3 {
+  font-size: 128.6%;
+}
+.cm-header-4 {
+  font-size: 110%;
+}
+.cm-header-5 {
+  font-size: 100%;
+  font-style: italic;
+}
+.cm-header-6 {
+  font-size: 100%;
+  font-style: italic;
+}
+</style>
+<style type="text/css">.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #888888 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0044DD } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mb { color: #666666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sa { color: #BA2121 } /* Literal.String.Affix */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #0000FF } /* Name.Function.Magic */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .vm { color: #19177C } /* Name.Variable.Magic */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */</style>
+<style type="text/css">
+/* Temporary definitions which will become obsolete with Notebook release 5.0 */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-bold { font-weight: bold; }
+</style>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Chapter-01.-Financial-Time-Series-and-Their-Characteristics">Chapter 01. Financial Time Series and Their Characteristics<a class="anchor-link" href="#Chapter-01.-Financial-Time-Series-and-Their-Characteristics">¶</a></h1><h2 id="Asset-Returns">Asset Returns<a class="anchor-link" href="#Asset-Returns">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="One-Period-Simple-Return">One-Period Simple Return<a class="anchor-link" href="#One-Period-Simple-Return">¶</a></h3><p>$1 + R_t = \frac{P_t}{P_{t-1}}$, or $P_t = P_{t-1}(1 + R_t)$, in which $R_t$ is the return rate, $P_t$ is the price at timestamp $t$. Therefore $R_t$ could be written as</p>
+<p>$$R_t = \frac{P_t}{P_{t-1}} - 1 = \frac{P_t - P_{t-1}}{P_{t-1}}$$</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Multiperiod-Simple-Return">Multiperiod Simple Return<a class="anchor-link" href="#Multiperiod-Simple-Return">¶</a></h3><p>Hold asset for $k$ periods between timestamp $t - k$ and $t$ gives a $k$-period simple gross return:</p>
+<p>$$1 + R_t[k] = \frac{P_t}{P_{t-k}} = \frac{P_t}{P_{t-1}}\times\frac{P_{t-1}}{P_{t-2}}\times\cdots\times\frac{P_{t-k+1}}{P_{t-k}}$$
+$$1 + R_t[k] = (1 + R_t)(1 + R_{t-1})\cdots(1 + R_{t-k+1}) = \prod_{j=0}^{k-1}(1 + R_{t-j})$$</p>
+<p>If $R_t$ is annual return, then annualized return of holding an assert $k$ years can be computed by</p>
+<p>$$\mathsf{Annualized}\{R_t[k]\} = \left[\prod_{j=0}^{k-1}(1 + R_{t - j})\right]^{1/k} - 1$$</p>
+<p>which can be computed by</p>
+<p>$$\mathsf{Annualized}\{R_t[k]\} = \exp\left[\frac{1}{k}\sum_{j=0}^{k-1}\ln(1 + R_{t - j})\right] - 1$$</p>
+<p>which can be approximated by first-order Taylor expansion</p>
+<p>$$\mathsf{Annualized}\{R_t[k]\} \approx \frac{1}{k}\sum_{j=0}^{k-1}R_{t-j}$$</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Continuous-Compounding">Continuous Compounding<a class="anchor-link" href="#Continuous-Compounding">¶</a></h3><p>If annual interest rate $r=0.1$, then for an initial deposit $C=\$1.0$, the total asset after a year is $C(1+r) = \$1.1$. If the bank pays interests semi-annually, the total asset after a year becomes $C(1 + r/2)^2 = \$1.1025$. If the bank gives the interests continuously, we could use the following equation to calculate the compounding asset:</p>
+<p>$$A = C \exp(r\times n)$$
+$$C = A \exp(-r\times n)$$</p>
+<p>in which $A$ is the asset value after $n$ time intervals, $C$ is the initial deposit, and $r$ is the interest of the time interval. Note that for simple return we use $R$ and for compounded return we use $r$ to denote it.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Continuous-Compounded-Return">Continuous Compounded Return<a class="anchor-link" href="#Continuous-Compounded-Return">¶</a></h3><p>We can get the defintion of compounded return $r_t$ using the pervious equations:</p>
+<p>$$\exp(r_t) = \frac{A}{C} = \frac{P_t}{P_{t-1}}$$
+$$r_t = \ln(1 + R_t) = \ln\frac{P_t}{P_{t-1}} = \ln{P_t} - \ln{P_{t-1}} = p_t - p_{t-1}$$</p>
+<p>Then in a multiperiod return case, the definition of $r_t[k]$ becomes</p>
+<p>$$r_t[k] = \ln(1 + R_t[k]) = \ln((1 + R_t)(1 + R_{t-1})\cdots(1 + R_{t-k+1})) = \ln(1+R_t) + \ln(1+R_{t-1})+\cdots+\ln(1+R_{t-k+1})=r_t + r_{t-1} + \cdots + r_{t - k + 1}$$</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Portfolio-Return">Portfolio Return<a class="anchor-link" href="#Portfolio-Return">¶</a></h3><p>Assume we have $N$ assets, $p$ is a portfolio and $w_i$ is the weight on asset $i$. The simple return of $p$ at time $t$ is $R_{p,t} = \sum_{i=1}^{N}w_iR_{it}$, in which $R_{it}$ is the simple return of asset $i$ at time $t$.
+The continuously compounded return, on the other hand does not hold such convenient property but we could still use this equation to approximiate the compouned return $r_{p,t} = \sum_{i=1}^{N}w_ir_{it}$.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Dividend-Payment">Dividend Payment<a class="anchor-link" href="#Dividend-Payment">¶</a></h3><p>Let $D_t$ be the dividend payment of an asset between $t-1$ and $t$, and $P_t$ be the price of the asset at the end of period $t$, which means $D_t$ is not included in $P_t$. Then simple return $R_t$ and compounded return $r_t$ at time $t$ becomes</p>
+<p>$$R_t = \frac{P_t + D_t}{P_{t-1}}$$</p>
+<p>$$r_t = \ln(p_t + D_t) - \ln(p_{t-1})$$</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Excess-Return">Excess Return<a class="anchor-link" href="#Excess-Return">¶</a></h3><p>Excess return is the difference between the asset's return and the return of a benchmark, usually people use U.S. Treasury bill return as the baseline benchmark. The simple return and compounded return are defined as</p>
+<p>$$Z_t = R_t - R_{0t}$$
+$$z_t = r_t - r_{0t}$$</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Distributional-Properties-of-Returns">Distributional Properties of Returns<a class="anchor-link" href="#Distributional-Properties-of-Returns">¶</a></h2><h3 id="Moments-of-a-Random-Variable">Moments of a Random Variable<a class="anchor-link" href="#Moments-of-a-Random-Variable">¶</a></h3><p>The $l$th moment of a continuous random variable $X$ is defined as $m_l^{\prime} = E(X^l)=\int_{-\infty}^{\infty}x^lf(x)dx$, where $E$ is the expection and f(x) is the probability density function of $X$.</p>
+<p>The first moment is the <em>mean</em> or <em>expectation</em> of X, which is denoted by $\mu_x$.</p>
+<p>Before goes to $l$th central moment, let's check what <a href="https://en.wikipedia.org/wiki/Central_moment">central moment</a> is</p>
+<blockquote><p>Central moment is a moment of a probability distribution of a random variable about the random variable's mean; that is, it is the expected value of a specified integer power of the deviation of the random variable from the mean.</p>
+</blockquote>
+<p>which is defined as $m_l = E[(X - \mu_x)^l] = \int_{-\infty}^{\infty}(x-\mu_x)^lf(x)dx$.</p>
+<p>The second central moment, denoted by $\sigma_x^2$, is the variance of $X$.</p>
+<p>The third central moment measures the symmetry of $X$ with respect to its mean. <em>Skewness</em> is normalized by $\sigma_x^3$ and defined as $S(x) = E\left[\frac{(X - \mu_x)^3}{\sigma_x^3}\right]$. This is used to measure the asymmetry property of a distribution. A negative skewness means left tail is longer and a positive skewness means the right tail is longer.</p>
+<p>The fourth central moment is used in <em>kurtosis</em>, which is a normalized fourth central moments of $X$ measuring the tail thickness of a distribution. The definition is $K(x)=E\left[\frac{(X-\mu_x)^4}{\sigma_x^4}\right]$. The quantity $K(x) - 3$ is called <em>excess kurtosis</em> because $K(x) = 3$ for a normal distribution. A positive excess kurtosis is said to have heavy tails, which means a random sampling will return more samples with extreme values. A heavy tailed distribution is called <em>leptokurtic</em> and a light tailed distribution is called <em>platykurtic</em>.</p>
+<p>One could use the following equations to calculate these moment values based on $T$ random observations of $X$:</p>
+<p>$$\hat{\mu}_x = \frac{1}{T}\sum_{t=1}^Tx_t$$</p>
+<p>$$\hat{\sigma}_x^2 = \frac{1}{T-1}\sum_{t=1}^T(x_t - \hat{\mu}_x)^2$$</p>
+<p>$$\hat{S}(x) = \frac{1}{(T - 1)\hat{\sigma}_x^3}\sum_{t=1}^{T}(x_t - \hat{\mu}_x)^3$$</p>
+<p>$$\hat{K}(x) = \frac{1}{(T - 1)\hat{\sigma}_x^4}\sum_{t=1}^{T}(x_t - \hat{\mu}_x)^4$$</p>
+<p>Under the normality assumption, the distribution $\hat{S}(x)$ and $\hat{K}(x)$ should be a normal distribution with a mean of $0$ and variances of $6/T$ and $24/T$ respectively. Therefore we could test the normality of an asset return. Given an asset return series $\{r_1,\ldots,r_T\}$, the test the skewness of the returns we could try reject null hypothesis $H_0 : S(r) = 0$ versus the alternative hypothesis $H_a : S(r) \neq 0$. Similarly, one can test the excess kurtosis using $H_0 : K(r) - 3 = 0$ and $H_a : K(r) - 3 \neq 0$. The test statistics are $t = \frac{\hat{S}(r)}{\sqrt{6/T}}$ and $t = \frac{\hat{K}(r) - 3}{\sqrt{24/T}}$ respectively.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [1]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span><span class="p">;</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">stats</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [2]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Example 1.2</span>
+<span class="n">ibm_url</span><span class="o">=</span><span class="s2">"https://gist.githubusercontent.com/bxshi/867908ff1cb18b52f7436569b4cd9f6d/raw/7772d6803004253439ba8da87cafae6e163990f1/d-ibm3dx7008.txt"</span>
+<span class="n">ibm</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">ibm_url</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">)</span> <span class="c1"># I have preprocess the data by "s/\s\+/\t/gi" so it is easier to read using Python</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"d-ibm3dx7008 Statistics:</span><span class="se">\n\t</span><span class="s2">Mean </span><span class="si">{:.6f}</span><span class="se">\n\t</span><span class="s2">Variance </span><span class="si">{:.6f}</span><span class="se">\n\t</span><span class="s2">Skewness </span><span class="si">{:.6f}</span><span class="s2"> t-statistic </span><span class="si">{:.6f}</span><span class="s2"> p-value </span><span class="si">{:.6f}</span><span class="se">\n\t</span><span class="s2">Kurtosis </span><span class="si">{:.6f}</span><span class="s2"> t-statistic </span><span class="si">{:.6f}</span><span class="s2"> p-value </span><span class="si">{:.6f}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">ibm</span><span class="o">.</span><span class="n">rtn</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">ibm</span><span class="o">.</span><span class="n">rtn</span><span class="o">.</span><span class="n">var</span><span class="p">(),</span> 
+    <span class="n">ibm</span><span class="o">.</span><span class="n">rtn</span><span class="o">.</span><span class="n">skew</span><span class="p">(),</span> <span class="n">ibm</span><span class="o">.</span><span class="n">rtn</span><span class="o">.</span><span class="n">skew</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">6.</span> <span class="o">/</span> <span class="n">ibm</span><span class="o">.</span><span class="n">rtn</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">stats</span><span class="o">.</span><span class="n">skewtest</span><span class="p">(</span><span class="n">ibm</span><span class="o">.</span><span class="n">rtn</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> 
+    <span class="n">ibm</span><span class="o">.</span><span class="n">rtn</span><span class="o">.</span><span class="n">kurt</span><span class="p">(),</span> <span class="n">ibm</span><span class="o">.</span><span class="n">rtn</span><span class="o">.</span><span class="n">kurt</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">24.</span> <span class="o">/</span> <span class="n">ibm</span><span class="o">.</span><span class="n">rtn</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">stats</span><span class="o">.</span><span class="n">kurtosistest</span><span class="p">(</span><span class="n">ibm</span><span class="o">.</span><span class="n">rtn</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>d-ibm3dx7008 Statistics:
+	Mean 0.000402
+	Variance 0.000286
+	Skewness 0.061417 t-statistic 2.487851 p-value 0.012882
+	Kurtosis 9.924633 t-statistic 201.009551 p-value 0.000000
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Distribution-of-Returns">Distribution of Returns<a class="anchor-link" href="#Distribution-of-Returns">¶</a></h3><p>In the univariate analysis, we want to analysis the dynamic structure of individual asset returns $\{r_{i1}, \ldots, r_{iT}\}$ of an asset $i$. We could write the distribution function as</p>
+<p>$$F(r_{i1},\ldots,r_{iT};\theta) = F(r_{i1})F(r_{i2}|r_{i1})\cdots F(r_{iT}|r_{i,T-1},\ldots,r_{i1})$$
+$$F(r_{i1},\ldots,r_{iT};\theta) = F(r_{i1})\prod_{t=2}^{T}F(r_{it}|r_{i,t-1},\ldots,r_{i1})$$</p>
+<p>which can be used to further define the likelihood function if the conditional distribution is a normal distribution with mean $\mu$ and variance $\sigma_t^2$.</p>
+<p>$$f(r_1, \ldots, r_T;\theta) = f(r_1;\theta)\prod_{t=2}^{T}\frac{1}{\sqrt{2\pi}\sigma_t}\exp\left[\frac{-(r_t - \mu_t)^2}{2\sigma_t^2}\right]$$</p>
+<p><em>TODO: How to get this equation and then the MLE.</em></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercises">Exercises<a class="anchor-link" href="#Exercises">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [3]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">three_stock_url</span> <span class="o">=</span> <span class="s2">"https://gist.githubusercontent.com/bxshi/4daeb54ebbb3160a47501199f7c0b971/raw/5cc23ae598bd88ea423d6e91860ee4fc544f64f3/d-3stocks9908.txt"</span>
+<span class="n">three_stock_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">three_stock_url</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">statistics</span><span class="p">(</span><span class="n">dat</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\t</span><span class="s2">Mean: </span><span class="si">{:.6f}</span><span class="se">\n\t</span><span class="s2">STD: </span><span class="si">{:.6f}</span><span class="se">\n\t</span><span class="s2">Skewness: </span><span class="si">{:.6f}</span><span class="se">\n\t</span><span class="s2">Excess Kurtosis: </span><span class="si">{:.6f}</span><span class="se">\n\t</span><span class="s2">Min: </span><span class="si">{:.6f}</span><span class="se">\n\t</span><span class="s2">Max: </span><span class="si">{:.6f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">sym_dat</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">sym_dat</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span> <span class="n">sym_dat</span><span class="o">.</span><span class="n">skew</span><span class="p">(),</span> <span class="n">sym_dat</span><span class="o">.</span><span class="n">kurt</span><span class="p">()</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="n">sym_dat</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">sym_dat</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">zero_mean_ttest</span><span class="p">(</span><span class="n">dat</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">stats</span><span class="o">.</span><span class="n">mstats</span><span class="o">.</span><span class="n">ttest_onesamp</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"1.1 (a) Compute the sample mean, standard deviation, skewness, excess kurtosis, minimum and maximum of the percentage simple returns.</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="n">three_stock_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+    <span class="n">sym_dat</span> <span class="o">=</span> <span class="n">three_stock_data</span><span class="p">[</span><span class="n">sym</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">statistics</span><span class="p">(</span><span class="n">sym_dat</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"1.1 (b) Transform the simple returns to log returns. (c) Compute above statistics."</span><span class="p">)</span>
+<span class="c1"># r_t = ln(1+ R_t)</span>
+<span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="n">three_stock_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+    <span class="n">sym_dat</span> <span class="o">=</span> <span class="n">three_stock_data</span><span class="p">[</span><span class="n">sym</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="p">)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">statistics</span><span class="p">(</span><span class="n">sym_dat</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"1.1 (d) Test the null hypothesis that the mean of the log returns of each stock is zero. Perform three separate tests and use 5</span><span class="si">% s</span><span class="s2">ignificance level to draw the conclusion."</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="n">three_stock_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+    <span class="n">sym_dat</span> <span class="o">=</span> <span class="n">three_stock_data</span><span class="p">[</span><span class="n">sym</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="p">)))</span>
+    <span class="n">t_test</span><span class="p">,</span> <span class="n">pval</span> <span class="o">=</span> <span class="n">zero_mean_ttest</span><span class="p">(</span><span class="n">sym_dat</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Symbol:</span><span class="si">{}</span><span class="se">\n\t</span><span class="s2"> T-test Stat and P-Value of H0: </span><span class="si">{:.4f}</span><span class="s2"> </span><span class="si">{:.4f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym</span><span class="p">,</span> <span class="n">t_test</span><span class="p">,</span> <span class="n">pval</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>1.1 (a) Compute the sample mean, standard deviation, skewness, excess kurtosis, minimum and maximum of the percentage simple returns.
+
+axp
+	Mean: 0.000146
+	STD: 0.024462
+	Skewness: -0.034647
+	Excess Kurtosis: 3.069696
+	Min: -0.175949
+	Max: 0.179266
+cat
+	Mean: 0.000595
+	STD: 0.021696
+	Skewness: 0.011685
+	Excess Kurtosis: 1.470462
+	Min: -0.145175
+	Max: 0.147229
+sbux
+	Mean: 0.000481
+	STD: 0.026826
+	Skewness: -0.082525
+	Excess Kurtosis: 5.774744
+	Min: -0.282862
+	Max: 0.146354
+
+
+1.1 (b) Transform the simple returns to log returns. (c) Compute above statistics.
+axp
+	Mean: -0.000154
+	STD: 0.024529
+	Skewness: -0.336836
+	Excess Kurtosis: 3.509365
+	Min: -0.193523
+	Max: 0.164892
+cat
+	Mean: 0.000359
+	STD: 0.021715
+	Skewness: -0.201985
+	Excess Kurtosis: 1.712618
+	Min: -0.156859
+	Max: 0.137349
+sbux
+	Mean: 0.000119
+	STD: 0.026959
+	Skewness: -0.597781
+	Excess Kurtosis: 9.936210
+	Min: -0.332487
+	Max: 0.136586
+
+
+1.1 (d) Test the null hypothesis that the mean of the log returns of each stock is zero. Perform three separate tests and use 5% significance level to draw the conclusion.
+Symbol:axp
+	 T-test Stat and P-Value of H0: -0.3156 0.7524
+Symbol:cat
+	 T-test Stat and P-Value of H0: 0.8302 0.4065
+Symbol:sbux
+	 T-test Stat and P-Value of H0: 0.2211 0.8250
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Alternatively, you could calculate the t-test stat and p-value of 1.1(d) using standard error. A detailed tutorial can be found at <a href="http://stattrek.com/hypothesis-test/mean.aspx?Tutorial=AP">StatTrek</a>.</p>
+<p>In general you need to calculate the Standard Error first, which is $\mathsf{SE}=\frac{\sigma}{\sqrt{n}}$, where $\sigma$ is the standard deviation, $n$ is the number of samples.</p>
+<p>After we get the SE, the next step is calcualte the t-test. For $H_0:\mu=0$, the t-stat is $\frac{\hat{\mu} - \mu}{\mathsf{SE}} = \frac{(\hat{\mu} - \mu)\sqrt{n}}{\sigma}$, in which $\hat{\mu}$ is the observed mean from the samples and $\mu$ is the expected mean from the null hypothesis.</p>
+<p>To calculate the p-value given a t-test value, we need to use a function called <a href="http://mathworld.wolfram.com/SurvivalFunction.html">Survival Function</a>. Basically we want to know the probability of random variable $X$ is larger than a given value $x$ (in our case it is the t-test value). We can define the surivial function as $f_s(X > x) = \int_{x}^{X_{max}}P(x^\prime)dx^\prime$. Note I use $f_s(\cdot)$ instead of $S(\cdot)$ because I do not want to confuse this with the skewness function $S(\cdot)$.</p>
+<p>Because our $H_0:\mu=0$, which is a two-sided one, so the actual p-value is $f_s(X > x) + f_s(X < x)$, we further define the two-sided p-value as $2f_s(X > x)$ because the probability are symmetric values.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [4]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="n">three_stock_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+    <span class="n">sym_dat</span> <span class="o">=</span> <span class="n">three_stock_data</span><span class="p">[</span><span class="n">sym</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="p">)))</span>
+    
+    <span class="n">t_stat</span> <span class="o">=</span> <span class="p">(</span><span class="n">sym_dat</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">-</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sym_dat</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">/</span> <span class="n">sym_dat</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">t_stat</span><span class="p">),</span> <span class="n">sym_dat</span><span class="o">.</span><span class="n">size</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Symbol:</span><span class="si">{}</span><span class="se">\n\t</span><span class="s2"> T-Stat and P-Value of H0: </span><span class="si">{:.4f}</span><span class="s2"> </span><span class="si">{:.4f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym</span><span class="p">,</span> <span class="n">t_stat</span><span class="p">,</span> <span class="n">pval</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Symbol:axp
+	 T-Stat and P-Value of H0: -0.3156 0.7524
+Symbol:cat
+	 T-Stat and P-Value of H0: 0.8302 0.4065
+Symbol:sbux
+	 T-Stat and P-Value of H0: 0.2211 0.8250
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [5]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">gm3dx_url</span> <span class="o">=</span> <span class="s2">"https://gist.githubusercontent.com/bxshi/10d7c4f2bdb4a396a1caa10e0fee9860/raw/3de946a336408b8a498eacfa5a04648599ccc84b/m-gm3dx7508.txt"</span>
+<span class="n">gm3dx_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">gm3dx_url</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"1.2"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Monthly Simple Return"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="n">gm3dx_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+    <span class="n">sym_dat</span> <span class="o">=</span> <span class="n">gm3dx_data</span><span class="p">[</span><span class="n">sym</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">statistics</span><span class="p">(</span><span class="n">sym_dat</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Monthly Log Return"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="n">gm3dx_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+    <span class="n">sym_dat</span> <span class="o">=</span> <span class="n">gm3dx_data</span><span class="p">[</span><span class="n">sym</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="p">)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">statistics</span><span class="p">(</span><span class="n">sym_dat</span><span class="p">))</span>
+    
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Zero Mean Log Return Test"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="n">gm3dx_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+    <span class="n">sym_dat</span> <span class="o">=</span> <span class="n">gm3dx_data</span><span class="p">[</span><span class="n">sym</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="p">)))</span>
+    <span class="n">t_test</span><span class="p">,</span> <span class="n">p_val</span> <span class="o">=</span> <span class="n">zero_mean_ttest</span><span class="p">(</span><span class="n">sym_dat</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Symbol:</span><span class="si">{}</span><span class="se">\n\t</span><span class="s2"> T-test Stat and P-Value of H0: </span><span class="si">{:.4f}</span><span class="s2"> </span><span class="si">{:.4f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym</span><span class="p">,</span> <span class="n">t_test</span><span class="p">,</span> <span class="n">pval</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>1.2
+Monthly Simple Return
+gm
+	Mean: 0.005568
+	STD: 0.092727
+	Skewness: -0.386311
+	Excess Kurtosis: -0.886606
+	Min: -0.389313
+	Max: 0.276619
+vw
+	Mean: 0.010118
+	STD: 0.045075
+	Skewness: -0.748154
+	Excess Kurtosis: -0.257932
+	Min: -0.225363
+	Max: 0.141600
+ew
+	Mean: 0.013314
+	STD: 0.055959
+	Skewness: -0.302343
+	Excess Kurtosis: 1.438625
+	Min: -0.272248
+	Max: 0.299260
+sp
+	Mean: 0.007301
+	STD: 0.043599
+	Skewness: -0.574764
+	Excess Kurtosis: -0.662257
+	Min: -0.217630
+	Max: 0.131767
+
+
+Monthly Log Return
+gm
+	Mean: 0.001102
+	STD: 0.095903
+	Skewness: -1.031234
+	Excess Kurtosis: 1.120285
+	Min: -0.493171
+	Max: 0.244215
+vw
+	Mean: 0.009046
+	STD: 0.045606
+	Skewness: -1.058773
+	Excess Kurtosis: 1.035638
+	Min: -0.255361
+	Max: 0.132431
+ew
+	Mean: 0.011670
+	STD: 0.056260
+	Skewness: -0.842317
+	Excess Kurtosis: 2.363175
+	Min: -0.317795
+	Max: 0.261795
+sp
+	Mean: 0.006319
+	STD: 0.044022
+	Skewness: -0.861165
+	Excess Kurtosis: 0.422327
+	Min: -0.245428
+	Max: 0.123780
+
+
+Zero Mean Log Return Test
+Symbol:gm
+	 T-test Stat and P-Value of H0: 0.2321 0.8250
+Symbol:vw
+	 T-test Stat and P-Value of H0: 4.0064 0.8250
+Symbol:ew
+	 T-test Stat and P-Value of H0: 4.1899 0.8250
+Symbol:sp
+	 T-test Stat and P-Value of H0: 2.8996 0.8250
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [6]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"1.3 (a) Average annual log return over the data span of S&P.;"</span><span class="p">)</span>
+<span class="c1"># The annual log return could be calculated by simply adding up all 12 monthly log returns.</span>
+<span class="n">sp_log_monthly_rtn</span> <span class="o">=</span> <span class="n">gm3dx_data</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="p">)))</span>
+<span class="n">sp_log_annual_rtn</span> <span class="o">=</span> <span class="n">sp_log_monthly_rtn</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\t</span><span class="s2">mean annual log return is </span><span class="si">{:.6f}</span><span class="s2">."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sp_log_annual_rtn</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"1.3 (b) Investing $1.00 on S&P; at 1975 and you will get $</span><span class="si">{:.6f}</span><span class="s2"> at the end of 2008"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="mf">1.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">sp_log_annual_rtn</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2008</span> <span class="o">-</span> <span class="mi">1975</span><span class="p">))))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>1.3 (a) Average annual log return over the data span of S&P.;
+	mean annual log return is 0.080025.
+1.3 (b) Investing $1.00 on S&P; at 1975 and you will get $14.024964 at the end of 2008
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [7]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"1.4 (a) test the null hypothesis that AMEX's skewness measure of the returns is zero."</span><span class="p">)</span>
+<span class="n">axp_log_rtn</span> <span class="o">=</span> <span class="n">three_stock_data</span><span class="o">.</span><span class="n">axp</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Skewness: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">skewtest</span><span class="p">(</span><span class="n">axp_log_rtn</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Kurtosis: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">kurtosistest</span><span class="p">(</span><span class="n">axp_log_rtn</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>1.4 (a) test the null hypothesis that AMEX's skewness measure of the returns is zero.
+Skewness: SkewtestResult(statistic=-6.7318244817371973, pvalue=1.6754868554174352e-11)
+Kurtosis: KurtosistestResult(statistic=18.514589536958042, pvalue=1.574924834421803e-76)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [8]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"1.5 TODO"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>1.5 TODO
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = '//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: 'center'," +
+        "    displayIndent: '0em'," +
+        "    showMathMenu: true," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['$','$'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        " linebreaks: { automatic: true, width: '95% container' }, " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+        "    } " +
+        "}); ";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+
+                <div class="clear"></div>
+
+                <div class="info">
+                    <a href="http://blog.bshi.engineer/AoFTS-chap-01-notes.html">posted at 20:00</a>
+                    &nbsp;&middot;&nbsp;<a href="http://blog.bshi.engineer/category/aofts-notes.html" rel="tag">AoFTS Notes</a>
+                    &nbsp;&middot;
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/aofts.html" class="tags">AoFTS</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/analysis-of-financial-time-series.html" class="tags">Analysis of Financial Time Series</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/notes.html" class="tags">notes</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/trading.html" class="tags">trading</a>
+                </div>
+		<a href="http://blog.bshi.engineer/AoFTS-chap-01-notes.html#disqus_thread">Click to read and post comments</a>
+            </article>
+
+            <div class="clear"></div>
+            <footer>
+                <p>
+                <a href="https://github.com/jody-frankowski/blue-penguin">Blue Penguin</a> Theme
+                &middot;
+                Powered by <a href="http://getpelican.com">Pelican</a>
+                &middot;
+                <a href="http://blog.bshi.engineer/feeds/all.atom.xml" rel="alternate">Atom Feed</a>
+            </footer>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+    try {
+        var pageTracker = _gat._getTracker("UA-106957224-1");
+    pageTracker._trackPageview();
+    } catch(err) {}</script>
+</body>
 </html>
