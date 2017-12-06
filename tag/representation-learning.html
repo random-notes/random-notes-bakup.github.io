@@ -40,7 +40,104 @@
         </div>
     </header>
     <div id="wrapper">
-        <div id="content">            <h4 class="date">Sep 24, 2017</h4>
+        <div id="content">            <h4 class="date">Dec 05, 2017</h4>
+
+            <article class="post">
+                <h2 class="title">
+                    <a href="http://blog.bshi.engineer/weekly-paper-club-004-weighted-average-sentence-embedding.html" rel="bookmark" title="Permanent Link to &quot;A Simple But Tough-To-Beat Baseline For Sentence Embedding&quot;">A Simple But Tough-To-Beat Baseline For Sentence Embedding</a>
+                </h2>
+
+                
+                
+
+                <p>You can find the paper at <a href="https://openreview.net/pdf?id=SyK00v5xx">ICLR'17</a>.</p>
+<p><strong>TL;DR:</strong> Word2Vec(CBOW) actually is a weighted average model, using weighted word average as sentence embedding can achieve a good result.</p>
+<p>This paper is based on a latent variable generative process which is </p>
+<div class="math">$$\mathsf{Pr}[w\ \textsf{emitted at time}\ t | c_t] \propto \exp(&lt; c_t, v_w&gt;),$$</div>
+<p>in which view the probability of word <span class="math">\(w\)</span> appears at time <span class="math">\(t\)</span> in a sentence given discourse/context vector <span class="math">\(c_t\)</span> is proportional to <span class="math">\(e^{c_t \cdot v_w}\)</span>.</p>
+<p>The authors claim that the discourse vector <span class="math">\(c_t\)</span> is based on some <em>slow random walk process</em>, they further rewrite the latent variable generative model to</p>
+<div class="math">$$\mathsf{Pr}[w\ \textsf{emitted at time}\ t | c_t] = \alpha p(w) + (1-\alpha)\frac{\exp(&lt;\widetilde{c}_s,v_w&gt;)}{Z_{\widetilde{c}_s}},$$</div>
+<p>in which <span class="math">\(\widetilde{c}_s=\beta c_0 + (1-\beta)c_s, c_0 \perp c_s\)</span>, and <span class="math">\(Z_{\widetilde{c}_s} = \Sigma_{w\in V}\exp(&lt;\widetilde{c}_s, v_w&gt;)\)</span>. This shows that a word <span class="math">\(w\)</span> may have a non-zero probability if </p>
+<ol>
+<li>it is related to sentence discourse <span class="math">\(c_s\)</span>, or</li>
+<li>term <span class="math">\(\alpha p(w) &gt; 0\)</span>, which means it is a frequent word, or</li>
+<li><span class="math">\(v_w\)</span> is correlated to <span class="math">\(c_0\)</span>.</li>
+</ol>
+<p>After a few other equations, the final objective function looks like</p>
+<div class="math">$$arg\ \textsf{max}\Sigma_{w\in s}f_w(\widetilde{c}_s)\propto \Sigma_{w\in s}\frac{a}{p(w) + a}v_w,$$</div>
+<p>where <span class="math">\(a = \frac{1-a}{\alpha Z}\)</span>.</p>
+<p>The algorithm is much simpler than the equations:</p>
+<p><img alt="Algorithm of Sentence Embedding" src="images/paper_club_004_algo.png"></p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+                <div class="clear"></div>
+
+                <div class="info">
+                    <a href="http://blog.bshi.engineer/weekly-paper-club-004-weighted-average-sentence-embedding.html">posted at 11:34</a>
+                    &nbsp;&middot;&nbsp;<a href="http://blog.bshi.engineer/category/paper-club.html" rel="tag">Paper Club</a>
+                    &nbsp;&middot;
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/research.html" class="tags">research</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/paper-club.html" class="tags">paper club</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/machine-learning.html" class="tags">machine learning</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/representation-learning.html" class="tags selected">representation learning</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/natural-language-processing.html" class="tags">natural language processing</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/sentence-embedding.html" class="tags">sentence embedding</a>
+                </div>
+		<a href="http://blog.bshi.engineer/weekly-paper-club-004-weighted-average-sentence-embedding.html#disqus_thread">Click to read and post comments</a>
+            </article>            <h4 class="date">Sep 24, 2017</h4>
 
             <article class="post">
                 <h2 class="title">

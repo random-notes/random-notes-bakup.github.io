@@ -40,37 +40,34 @@
         </div>
     </header>
     <div id="wrapper">
-        <div id="content">            <h4 class="date">Sep 27, 2017</h4>
+        <div id="content">            <h4 class="date">Dec 05, 2017</h4>
 
             <article class="post">
                 <h2 class="title">
-                    <a href="http://blog.bshi.engineer/weekly-paper-club-003-ml-technical-debt.html" rel="bookmark" title="Permanent Link to &quot;Hidden Technical Debt in Machine Learning Systems&quot;">Hidden Technical Debt in Machine Learning Systems</a>
+                    <a href="http://blog.bshi.engineer/weekly-paper-club-004-weighted-average-sentence-embedding.html" rel="bookmark" title="Permanent Link to &quot;A Simple But Tough-To-Beat Baseline For Sentence Embedding&quot;">A Simple But Tough-To-Beat Baseline For Sentence Embedding</a>
                 </h2>
 
                 
                 
 
-                <p>I found this paper through HN and it is an old <a href="https://papers.nips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems.pdf">NIPS paper</a> published in 2015 by a list of Googlers. I'll try to summarize all the problems this paper mentioned that real-world ML systems are facing.</p>
-<h4>Decouple features and make strict abstractions</h4>
-<h5>Entanglement</h5>
-<p>Machine Learning models are usually trying to learn how to generate a prediction <span class="math">\(\hat{y}\)</span> with the given features <span class="math">\(x_1,\ldots,x_n\)</span>. If any of the feature <span class="math">\(x_i\)</span> changes, then all the learned parameters in this model will needs to be adjusted accordingly. Adding or deleting new features cause the same problem. This also applies to adjusting hyper-parameters, optimizers, and other tweaks. They call this the <strong>CACE</strong> principle. </p>
-<blockquote>
-<p>CACE: Changing Anything Changes Everything.</p>
-</blockquote>
-<p>A possible solution is to separate a large model into several models and train an ensemble model. But the reason that ensemble models work well is because the errors of individual models are uncorrelated. Therefore if one model get changed and gets slightly better results but now its error correlated with another model in the ensemble system, then the overall performance may get worse.</p>
-<p>They also mentioned another way of deteching changes using some high-dimensional visualization tool but I haven't checked it yet (Ad click
-prediction: a view from the trenches.).</p>
-<h5>Correction Cascades</h5>
-<p>In production systems the ML models may depends on each other while working on similar cases. For example <span class="math">\(m_a\)</span> is trained to solve task <span class="math">\(a\)</span>, and <span class="math">\(a^\prime\)</span> is a slightly different task so we train a <span class="math">\(m_a^\prime\)</span> based on <span class="math">\(m_a\)</span> to solve it, and this can also applies to <span class="math">\(a^{\prime\prime}\)</span> and so on.
-In such case it is hard to monitor the improvement of each individual model. One way of solving this is feeding a variable to <span class="math">\(m_a\)</span> and let it learn how to distinguish these similar tasks.</p>
-<p>However I'm not sure this could solve the entanglement problem because now this model is still vulnerable to CACE.</p>
-<h5>Undeclared Customer</h5>
-<ul>
-<li>Make sure you have ACL on the produced features so you know who are using it and your changes will not break their system.</li>
-<li>When depending on data without ownership or data that may change dynamically, do versioning to avoid input characteristic changes.</li>
-<li>Spend time to identiy features you used in the system, remove out-dated features, correlated features, and features that only marginall increase the performance.</li>
-</ul>
-<p><strong>This is an unfinished post.</strong></p>
+                <p>You can find the paper at <a href="https://openreview.net/pdf?id=SyK00v5xx">ICLR'17</a>.</p>
+<p><strong>TL;DR:</strong> Word2Vec(CBOW) actually is a weighted average model, using weighted word average as sentence embedding can achieve a good result.</p>
+<p>This paper is based on a latent variable generative process which is </p>
+<div class="math">$$\mathsf{Pr}[w\ \textsf{emitted at time}\ t | c_t] \propto \exp(&lt; c_t, v_w&gt;),$$</div>
+<p>in which view the probability of word <span class="math">\(w\)</span> appears at time <span class="math">\(t\)</span> in a sentence given discourse/context vector <span class="math">\(c_t\)</span> is proportional to <span class="math">\(e^{c_t \cdot v_w}\)</span>.</p>
+<p>The authors claim that the discourse vector <span class="math">\(c_t\)</span> is based on some <em>slow random walk process</em>, they further rewrite the latent variable generative model to</p>
+<div class="math">$$\mathsf{Pr}[w\ \textsf{emitted at time}\ t | c_t] = \alpha p(w) + (1-\alpha)\frac{\exp(&lt;\widetilde{c}_s,v_w&gt;)}{Z_{\widetilde{c}_s}},$$</div>
+<p>in which <span class="math">\(\widetilde{c}_s=\beta c_0 + (1-\beta)c_s, c_0 \perp c_s\)</span>, and <span class="math">\(Z_{\widetilde{c}_s} = \Sigma_{w\in V}\exp(&lt;\widetilde{c}_s, v_w&gt;)\)</span>. This shows that a word <span class="math">\(w\)</span> may have a non-zero probability if </p>
+<ol>
+<li>it is related to sentence discourse <span class="math">\(c_s\)</span>, or</li>
+<li>term <span class="math">\(\alpha p(w) &gt; 0\)</span>, which means it is a frequent word, or</li>
+<li><span class="math">\(v_w\)</span> is correlated to <span class="math">\(c_0\)</span>.</li>
+</ol>
+<p>After a few other equations, the final objective function looks like</p>
+<div class="math">$$arg\ \textsf{max}\Sigma_{w\in s}f_w(\widetilde{c}_s)\propto \Sigma_{w\in s}\frac{a}{p(w) + a}v_w,$$</div>
+<p>where <span class="math">\(a = \frac{1-a}{\alpha Z}\)</span>.</p>
+<p>The algorithm is much simpler than the equations:</p>
+<p><img alt="Algorithm of Sentence Embedding" src="images/paper_club_004_algo.png"></p>
 <script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
     var align = "center",
         indent = "0em",
@@ -129,14 +126,17 @@ In such case it is hard to monitor the improvement of each individual model. One
                 <div class="clear"></div>
 
                 <div class="info">
-                    <a href="http://blog.bshi.engineer/weekly-paper-club-003-ml-technical-debt.html">posted at 00:00</a>
+                    <a href="http://blog.bshi.engineer/weekly-paper-club-004-weighted-average-sentence-embedding.html">posted at 11:34</a>
                     &nbsp;&middot;&nbsp;<a href="http://blog.bshi.engineer/category/paper-club.html" rel="tag">Paper Club</a>
                     &nbsp;&middot;
                     &nbsp;<a href="http://blog.bshi.engineer/tag/research.html" class="tags">research</a>
                     &nbsp;<a href="http://blog.bshi.engineer/tag/paper-club.html" class="tags selected">paper club</a>
                     &nbsp;<a href="http://blog.bshi.engineer/tag/machine-learning.html" class="tags">machine learning</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/representation-learning.html" class="tags">representation learning</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/natural-language-processing.html" class="tags">natural language processing</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/sentence-embedding.html" class="tags">sentence embedding</a>
                 </div>
-		<a href="http://blog.bshi.engineer/weekly-paper-club-003-ml-technical-debt.html#disqus_thread">Click to read and post comments</a>
+		<a href="http://blog.bshi.engineer/weekly-paper-club-004-weighted-average-sentence-embedding.html#disqus_thread">Click to read and post comments</a>
             </article>            <h4 class="date">Sep 24, 2017</h4>
 
             <article class="post">
