@@ -42,7 +42,104 @@
         </div>
     </header>
     <div id="wrapper">
-        <div id="content">            <h4 class="date">Sep 24, 2017</h4>
+        <div id="content">            <h4 class="date">Sep 27, 2017</h4>
+
+            <article class="post">
+                <h2 class="title">
+                    <a href="http://blog.bshi.engineer/weekly-paper-club-003-ml-technical-debt.html" rel="bookmark" title="Permanent Link to &quot;Hidden Technical Debt in Machine Learning Systems&quot;">Hidden Technical Debt in Machine Learning Systems</a>
+                </h2>
+
+                
+                
+
+                <p>I found this paper through HN and it is an old <a href="https://papers.nips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems.pdf">NIPS paper</a> published in 2015 by a list of Googlers. I'll try to summarize all the problems this paper mentioned that real-world ML systems are facing.</p>
+<h4>Decouple features and make strict abstractions</h4>
+<h5>Entanglement</h5>
+<p>Machine Learning models are usually trying to learn how to generate a prediction <span class="math">\(\hat{y}\)</span> with the given features <span class="math">\(x_1,\ldots,x_n\)</span>. If any of the feature <span class="math">\(x_i\)</span> changes, then all the learned parameters in this model will needs to be adjusted accordingly. Adding or deleting new features cause the same problem. This also applies to adjusting hyper-parameters, optimizers, and other tweaks. They call this the <strong>CACE</strong> principle. </p>
+<blockquote>
+<p>CACE: Changing Anything Changes Everything.</p>
+</blockquote>
+<p>A possible solution is to separate a large model into several models and train an ensemble model. But the reason that ensemble models work well is because the errors of individual models are uncorrelated. Therefore if one model get changed and gets slightly better results but now its error correlated with another model in the ensemble system, then the overall performance may get worse.</p>
+<p>They also mentioned another way of deteching changes using some high-dimensional visualization tool but I haven't checked it yet (Ad click
+prediction: a view from the trenches.).</p>
+<h5>Correction Cascades</h5>
+<p>In production systems the ML models may depends on each other while working on similar cases. For example <span class="math">\(m_a\)</span> is trained to solve task <span class="math">\(a\)</span>, and <span class="math">\(a^\prime\)</span> is a slightly different task so we train a <span class="math">\(m_a^\prime\)</span> based on <span class="math">\(m_a\)</span> to solve it, and this can also applies to <span class="math">\(a^{\prime\prime}\)</span> and so on.
+In such case it is hard to monitor the improvement of each individual model. One way of solving this is feeding a variable to <span class="math">\(m_a\)</span> and let it learn how to distinguish these similar tasks.</p>
+<p>However I'm not sure this could solve the entanglement problem because now this model is still vulnerable to CACE.</p>
+<h5>Undeclared Customer</h5>
+<ul>
+<li>Make sure you have ACL on the produced features so you know who are using it and your changes will not break their system.</li>
+<li>When depending on data without ownership or data that may change dynamically, do versioning to avoid input characteristic changes.</li>
+<li>Spend time to identiy features you used in the system, remove out-dated features, correlated features, and features that only marginall increase the performance.</li>
+</ul>
+<p><strong>This is an unfinished post.</strong></p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+                <div class="clear"></div>
+
+                <div class="info">
+                    <a href="http://blog.bshi.engineer/weekly-paper-club-003-ml-technical-debt.html">posted at 00:00</a>
+                    &nbsp;&middot;&nbsp;<a href="http://blog.bshi.engineer/category/paper-club.html" rel="tag">Paper Club</a>
+                    &nbsp;&middot;
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/research.html" class="tags">research</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/paper-club.html" class="tags">paper club</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/machine-learning.html" class="tags">machine learning</a>
+                </div>
+		<a href="http://blog.bshi.engineer/weekly-paper-club-003-ml-technical-debt.html#disqus_thread">Click to read and post comments</a>
+            </article>            <h4 class="date">Sep 24, 2017</h4>
 
             <article class="post">
                 <h2 class="title">

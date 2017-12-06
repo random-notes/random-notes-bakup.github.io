@@ -1,5 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>RAndom NoTes - Paper Club</title><link href="http://blog.bshi.engineer/" rel="alternate"></link><link href="http://blog.bshi.engineer/feeds/paper-club.atom.xml" rel="self"></link><id>http://blog.bshi.engineer/</id><updated>2017-09-24T16:24:00-04:00</updated><entry><title>Learning Edge Representations via Low-Rank Asymmetric Projections</title><link href="http://blog.bshi.engineer/weekly-paper-club-002-edge-representation.html" rel="alternate"></link><published>2017-09-24T00:00:00-04:00</published><updated>2017-09-24T16:24:00-04:00</updated><author><name>Dash Shi</name></author><id>tag:blog.bshi.engineer,2017-09-24:/weekly-paper-club-002-edge-representation.html</id><summary type="html">&lt;p&gt;This paper uses random walk with DNN to generate an asymmetric edge score for two given nodes and then train the model using a loss similar to logistic regression with sampled negative labels.&lt;/p&gt;</summary><content type="html">&lt;p&gt;This paper is published at CIKM'17 and can be found at &lt;a href="https://arxiv.org/pdf/1705.05615.pdf"&gt;Arxiv&lt;/a&gt; and the code is available at &lt;a href="http://sami.haija.org/graph/deep_embedding.html"&gt;here&lt;/a&gt; however as of Sept 24th it is showing &lt;code&gt;Coming Soon!&lt;/code&gt;. The corresponding author of this work is the author of &lt;a href="https://arxiv.org/abs/1403.6652"&gt;DeepWalk&lt;/a&gt;.&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>RAndom NoTes - Paper Club</title><link href="http://blog.bshi.engineer/" rel="alternate"></link><link href="http://blog.bshi.engineer/feeds/paper-club.atom.xml" rel="self"></link><id>http://blog.bshi.engineer/</id><updated>2017-09-27T22:24:00-04:00</updated><entry><title>Hidden Technical Debt in Machine Learning Systems</title><link href="http://blog.bshi.engineer/weekly-paper-club-003-ml-technical-debt.html" rel="alternate"></link><published>2017-09-27T00:00:00-04:00</published><updated>2017-09-27T22:24:00-04:00</updated><author><name>Dash Shi</name></author><id>tag:blog.bshi.engineer,2017-09-27:/weekly-paper-club-003-ml-technical-debt.html</id><summary type="html">&lt;p&gt;This paper discuss the ML-specific technical debts that real world systems are facing.&lt;/p&gt;</summary><content type="html">&lt;p&gt;I found this paper through HN and it is an old &lt;a href="https://papers.nips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems.pdf"&gt;NIPS paper&lt;/a&gt; published in 2015 by a list of Googlers. I'll try to summarize all the problems this paper mentioned that real-world ML systems are facing.&lt;/p&gt;
+&lt;h4&gt;Decouple features and make strict abstractions&lt;/h4&gt;
+&lt;h5&gt;Entanglement&lt;/h5&gt;
+&lt;p&gt;Machine Learning models are usually trying to learn how to generate a prediction &lt;span class="math"&gt;\(\hat{y}\)&lt;/span&gt; with the given features &lt;span class="math"&gt;\(x_1,\ldots,x_n\)&lt;/span&gt;. If any of the feature &lt;span class="math"&gt;\(x_i\)&lt;/span&gt; changes, then all the learned parameters in this model will needs to be adjusted accordingly. Adding or deleting new features cause the same problem. This also applies to adjusting hyper-parameters, optimizers, and other tweaks. They call this the &lt;strong&gt;CACE&lt;/strong&gt; principle. &lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;CACE: Changing Anything Changes Everything.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;A possible solution is to separate a large model into several models and train an ensemble model. But the reason that ensemble models work well is because the errors of individual models are uncorrelated. Therefore if one model get changed and gets slightly better results but now its error correlated with another model in the ensemble system, then the overall performance may get worse.&lt;/p&gt;
+&lt;p&gt;They also mentioned another way of deteching changes using some high-dimensional visualization tool but I haven't checked it yet (Ad click
+prediction: a view from the trenches.).&lt;/p&gt;
+&lt;h5&gt;Correction Cascades&lt;/h5&gt;
+&lt;p&gt;In production systems the ML models may depends on each other while working on similar cases. For example &lt;span class="math"&gt;\(m_a\)&lt;/span&gt; is trained to solve task &lt;span class="math"&gt;\(a\)&lt;/span&gt;, and &lt;span class="math"&gt;\(a^\prime\)&lt;/span&gt; is a slightly different task so we train a &lt;span class="math"&gt;\(m_a^\prime\)&lt;/span&gt; based on &lt;span class="math"&gt;\(m_a\)&lt;/span&gt; to solve it, and this can also applies to &lt;span class="math"&gt;\(a^{\prime\prime}\)&lt;/span&gt; and so on.
+In such case it is hard to monitor the improvement of each individual model. One way of solving this is feeding a variable to &lt;span class="math"&gt;\(m_a\)&lt;/span&gt; and let it learn how to distinguish these similar tasks.&lt;/p&gt;
+&lt;p&gt;However I'm not sure this could solve the entanglement problem because now this model is still vulnerable to CACE.&lt;/p&gt;
+&lt;h5&gt;Undeclared Customer&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;Make sure you have ACL on the produced features so you know who are using it and your changes will not break their system.&lt;/li&gt;
+&lt;li&gt;When depending on data without ownership or data that may change dynamically, do versioning to avoid input characteristic changes.&lt;/li&gt;
+&lt;li&gt;Spend time to identiy features you used in the system, remove out-dated features, correlated features, and features that only marginall increase the performance.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;This is an unfinished post.&lt;/strong&gt;&lt;/p&gt;
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;</content><category term="research"></category><category term="paper club"></category><category term="machine learning"></category></entry><entry><title>Learning Edge Representations via Low-Rank Asymmetric Projections</title><link href="http://blog.bshi.engineer/weekly-paper-club-002-edge-representation.html" rel="alternate"></link><published>2017-09-24T00:00:00-04:00</published><updated>2017-09-24T16:24:00-04:00</updated><author><name>Dash Shi</name></author><id>tag:blog.bshi.engineer,2017-09-24:/weekly-paper-club-002-edge-representation.html</id><summary type="html">&lt;p&gt;This paper uses random walk with DNN to generate an asymmetric edge score for two given nodes and then train the model using a loss similar to logistic regression with sampled negative labels.&lt;/p&gt;</summary><content type="html">&lt;p&gt;This paper is published at CIKM'17 and can be found at &lt;a href="https://arxiv.org/pdf/1705.05615.pdf"&gt;Arxiv&lt;/a&gt; and the code is available at &lt;a href="http://sami.haija.org/graph/deep_embedding.html"&gt;here&lt;/a&gt; however as of Sept 24th it is showing &lt;code&gt;Coming Soon!&lt;/code&gt;. The corresponding author of this work is the author of &lt;a href="https://arxiv.org/abs/1403.6652"&gt;DeepWalk&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Most network representation models learn representations &lt;span class="math"&gt;\(Y_u\)&lt;/span&gt; for each node &lt;span class="math"&gt;\(u\)&lt;/span&gt; in the graph and measure the closeness/edge betwee two nodes &lt;span class="math"&gt;\(u\)&lt;/span&gt; and &lt;span class="math"&gt;\(v\)&lt;/span&gt; by some distance measurement &lt;span class="math"&gt;\(\mathsf{dist}(Y_u, Y_v)\)&lt;/span&gt;. In this paper they call this method as &lt;strong&gt;node-centric&lt;/strong&gt; and has two drawbacks:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Such method implicitly assumes the connections are undirected, which means &lt;span class="math"&gt;\(u\rightarrow v\)&lt;/span&gt; and &lt;span class="math"&gt;\(v\rightarrow u\)&lt;/span&gt; are equivalent because they are sharing the same distance function,&lt;/li&gt;
