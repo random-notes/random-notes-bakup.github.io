@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Global Site Tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-106957224-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments)};
+		  gtag('js', new Date());
+
+			  gtag('config', 'UA-106957224-1');
+				</script>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>RAndom NoTes | articles tagged "PySpark"</title>
+    <link rel="shortcut icon" type="image/png" href="http://blog.bshi.engineer/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="http://blog.bshi.engineer/favicon.ico">
+    <link href="http://blog.bshi.engineer/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="RAndom NoTes Full Atom Feed" />
+    <link rel="stylesheet" href="http://blog.bshi.engineer/theme/css/screen.css" type="text/css" />
+    <link rel="stylesheet" href="http://blog.bshi.engineer/theme/css/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="http://blog.bshi.engineer/theme/css/print.css" type="text/css" media="print" />
+    <meta name="generator" content="Pelican" />
+    <meta name="description" content="" />
+    <meta name="author" content="Dash Shi" />
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li class="ephemeral selected"><a href="http://blog.bshi.engineer/tag/pyspark.html">PySpark</a></li>
+                <li><a href="http://blog.bshi.engineer/">Home</a></li>
+                <li><a href="http://blog.bshi.engineer/tags">Tags</a></li>
+                <li><a href="http://blog.bshi.engineer/categories">Categories</a></li>
+                <li><a href="http://blog.bshi.engineer/archives">Archives</a></li>
+            </ul>
+        </nav>
+        <div class="header_box">
+            <h1><a href="http://blog.bshi.engineer/">RAndom NoTes</a></h1>
+        </div>
+    </header>
+    <div id="wrapper">
+        <div id="content">            <h4 class="date">Jan 08, 2018</h4>
+
+            <article class="post">
+                <h2 class="title">
+                    <a href="http://blog.bshi.engineer/enlarge_executor_memory_result_size_in_pyspark.html" rel="bookmark" title="Permanent Link to &quot;Enlarge Executor Memory Size and Result Size in PySpark&quot;">Enlarge Executor Memory Size and Result Size in PySpark</a>
+                </h2>
+
+                
+                
+
+                <p>I'm working on some sequential pattern mining tasks recently, and I found that Spark has an implementation of it, so I installed PySpark to play with it. However, my data contains hundreds of sequences, and each sequence includes thousands of items, which results in a data set that is way larger than the toy example provided in their tutorial.</p>
+<p>To run PrefixSpan on my data, I need to enlarge the executor memory. I suppose to edit a configuration file located at <code>$SPARK_HOME/conf/spark-defaults.conf</code>, but here is the tricky part: I do not have a standalone Spark installed, all I have is PySpark, so where should I find <code>$SPARK_HOME</code> and that <code>spark-defaults.conf</code> file?</p>
+<p>It turns out that PySpark comes with its Spark binaries, so the first thing I need to do is find where the PySpark is. I use Python to print out the location of PySpark:</p>
+<div class="highlight"><pre><span></span>Python <span class="m">3</span>.4.3 <span class="o">(</span>default, Oct <span class="m">14</span> <span class="m">2015</span>, <span class="m">20</span>:28:29<span class="o">)</span>
+<span class="o">[</span>GCC <span class="m">4</span>.8.4<span class="o">]</span> on linux
+Type <span class="s2">&quot;help&quot;</span>, <span class="s2">&quot;copyright&quot;</span>, <span class="s2">&quot;credits&quot;</span> or <span class="s2">&quot;license&quot;</span> <span class="k">for</span> more information.
+&gt;&gt;&gt; import pyspark
+&gt;&gt;&gt; print<span class="o">(</span>pyspark.__file__<span class="o">)</span>
+/REDACTED/py3env/lib/python3.4/site-packages/pyspark/__init__.py
+</pre></div>
+
+
+<p>Okay, it is at <code>/REDACTED/py3env/lib/python3.4/site-packages/pyspark/</code>. I <code>cd</code>ed to that directory, and find no <code>conf</code> folder under it, so I created one and put a <code>spark-defaults.conf</code> in it with the following content:</p>
+<div class="highlight"><pre><span></span>spark.driver.memory 16g
+spark.executor.memory 16g
+spark.driver.maxResultSize 8g
+</pre></div>
+
+
+<p>Now use <code>ps -ef | grep spark</code> to find all <code>pyspark</code> processes and kill them with the <code>kill</code> command, you may see something looks like</p>
+<div class="highlight"><pre><span></span>py3env/lib/python3.4/site-packages/pyspark/jars/* -Xmx1g org.apache.spark.deploy.SparkSubmit pyspark-shell
+</pre></div>
+
+
+<p>kill them, kill them all.</p>
+<p>After you killed all existing spark instances, try run your code again or simply run <code>pyspark</code>, then run <code>ps -ef | grep spark</code> again, you will see it is running with the new <code>-Xmx16g</code> flag.</p>
+<p>Enjoy!</p>
+                <div class="clear"></div>
+
+                <div class="info">
+                    <a href="http://blog.bshi.engineer/enlarge_executor_memory_result_size_in_pyspark.html">posted at 22:26</a>
+                    &nbsp;&middot;&nbsp;<a href="http://blog.bshi.engineer/category/engineering.html" rel="tag">Engineering</a>
+                    &nbsp;&middot;
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/pyspark.html" class="tags selected">PySpark</a>
+                    &nbsp;<a href="http://blog.bshi.engineer/tag/spark.html" class="tags">Spark</a>
+                </div>
+		<a href="http://blog.bshi.engineer/enlarge_executor_memory_result_size_in_pyspark.html#disqus_thread">Click to read and post comments</a>
+            </article>
+
+            <div class="clear"></div>
+            <footer>
+                <p>
+                <a href="https://github.com/jody-frankowski/blue-penguin">Blue Penguin</a> Theme
+                &middot;
+                Powered by <a href="http://getpelican.com">Pelican</a>
+                &middot;
+                <a href="http://blog.bshi.engineer/feeds/all.atom.xml" rel="alternate">Atom Feed</a>
+            </footer>
+        </div>
+        <div class="clear"></div>
+    </div>
+</body>
+</html>

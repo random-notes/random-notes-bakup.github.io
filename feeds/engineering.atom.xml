@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>RAndom NoTes - Engineering</title><link href="http://blog.bshi.engineer/" rel="alternate"></link><link href="http://blog.bshi.engineer/feeds/engineering.atom.xml" rel="self"></link><id>http://blog.bshi.engineer/</id><updated>2018-01-08T22:26:00-05:00</updated><entry><title>Enlarge Executor Memory Size and Result Size in PySpark</title><link href="http://blog.bshi.engineer/enlarge_executor_memory_result_size_in_pyspark.html" rel="alternate"></link><published>2018-01-08T22:26:00-05:00</published><updated>2018-01-08T22:26:00-05:00</updated><author><name>Dash Shi</name></author><id>tag:blog.bshi.engineer,2018-01-08:/enlarge_executor_memory_result_size_in_pyspark.html</id><summary type="html">&lt;p&gt;Enlarge executor memory so you can run larger data sets on PySpark.&lt;/p&gt;</summary><content type="html">&lt;p&gt;I'm working on some sequential pattern mining tasks recently, and I found that Spark has an implementation of it, so I installed PySpark to play with it. However, my data contains hundreds of sequences, and each sequence includes thousands of items, which results in a data set that is way larger than the toy example provided in their tutorial.&lt;/p&gt;
+&lt;p&gt;To run PrefixSpan on my data, I need to enlarge the executor memory. I suppose to edit a configuration file located at &lt;code&gt;$SPARK_HOME/conf/spark-defaults.conf&lt;/code&gt;, but here is the tricky part: I do not have a standalone Spark installed, all I have is PySpark, so where should I find &lt;code&gt;$SPARK_HOME&lt;/code&gt; and that &lt;code&gt;spark-defaults.conf&lt;/code&gt; file?&lt;/p&gt;
+&lt;p&gt;It turns out that PySpark comes with its Spark binaries, so the first thing I need to do is find where the PySpark is. I use Python to print out the location of PySpark:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Python &lt;span class="m"&gt;3&lt;/span&gt;.4.3 &lt;span class="o"&gt;(&lt;/span&gt;default, Oct &lt;span class="m"&gt;14&lt;/span&gt; &lt;span class="m"&gt;2015&lt;/span&gt;, &lt;span class="m"&gt;20&lt;/span&gt;:28:29&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;GCC &lt;span class="m"&gt;4&lt;/span&gt;.8.4&lt;span class="o"&gt;]&lt;/span&gt; on linux
+Type &lt;span class="s2"&gt;&amp;quot;help&amp;quot;&lt;/span&gt;, &lt;span class="s2"&gt;&amp;quot;copyright&amp;quot;&lt;/span&gt;, &lt;span class="s2"&gt;&amp;quot;credits&amp;quot;&lt;/span&gt; or &lt;span class="s2"&gt;&amp;quot;license&amp;quot;&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; more information.
+&amp;gt;&amp;gt;&amp;gt; import pyspark
+&amp;gt;&amp;gt;&amp;gt; print&lt;span class="o"&gt;(&lt;/span&gt;pyspark.__file__&lt;span class="o"&gt;)&lt;/span&gt;
+/REDACTED/py3env/lib/python3.4/site-packages/pyspark/__init__.py
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Okay, it is at &lt;code&gt;/REDACTED/py3env/lib/python3.4/site-packages/pyspark/&lt;/code&gt;. I &lt;code&gt;cd&lt;/code&gt;ed to that directory, and find no &lt;code&gt;conf&lt;/code&gt; folder under it, so I created one and put a &lt;code&gt;spark-defaults.conf&lt;/code&gt; in it with the following content:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;spark.driver.memory 16g
+spark.executor.memory 16g
+spark.driver.maxResultSize 8g
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Now use &lt;code&gt;ps -ef | grep spark&lt;/code&gt; to find all &lt;code&gt;pyspark&lt;/code&gt; processes and kill them with the &lt;code&gt;kill&lt;/code&gt; command, you may see something looks like&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;py3env/lib/python3.4/site-packages/pyspark/jars/* -Xmx1g org.apache.spark.deploy.SparkSubmit pyspark-shell
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;kill them, kill them all.&lt;/p&gt;
+&lt;p&gt;After you killed all existing spark instances, try run your code again or simply run &lt;code&gt;pyspark&lt;/code&gt;, then run &lt;code&gt;ps -ef | grep spark&lt;/code&gt; again, you will see it is running with the new &lt;code&gt;-Xmx16g&lt;/code&gt; flag.&lt;/p&gt;
+&lt;p&gt;Enjoy!&lt;/p&gt;</content><category term="PySpark"></category><category term="Spark"></category></entry></feed>
